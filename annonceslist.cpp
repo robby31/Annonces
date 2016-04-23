@@ -5,7 +5,9 @@ AnnoncesList::AnnoncesList(QNetworkReply *reply, QObject *parent) :
     m_reply(reply),
     m_href(),
     m_nbpages(-1),
-    allPagesLoaded(false)
+    allPagesLoaded(false),
+    m_abort(false),
+    m_linksToUpdate()
 {
     if (reply)
     {
@@ -86,16 +88,29 @@ void AnnoncesList::pageLoaded()
 void AnnoncesList::requestAnnonce(const QUrl &url)
 {
     QNetworkReply *reply = m_reply->manager()->get(QNetworkRequest(url));
+    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(replyError(QNetworkReply::NetworkError)));
     connect(reply, SIGNAL(finished()), this, SLOT(annonceLoaded()));
     connect(this, SIGNAL(destroyed(QObject*)), reply, SLOT(deleteLater()));
+}
+
+void AnnoncesList::replyError(const QNetworkReply::NetworkError &error)
+{
+    qWarning() << "ERROR" << error;
 }
 
 void AnnoncesList::annonceLoaded()
 {
     QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
     int index = href().indexOf(reply->request().url().toString());
-    parseAnnonce(reply->request().url(), reply->readAll());
+    QByteArray data = reply->readAll();
+    if (data.size()>0)
+        parseAnnonce(reply->request().url(), data);
+    else
+        qWarning() << "ERROR, no data received for" << reply->request().url();
     reply->deleteLater();
+
+    if (m_abort)
+        return;
 
     if (allPagesLoaded)
         emit progress(100*index/m_href.size());
@@ -107,6 +122,36 @@ void AnnoncesList::annonceLoaded()
     }
     else
     {
+        updateLinks();
+
         emit finished();
+    }
+}
+
+void AnnoncesList::abort()
+{
+    m_abort = true;
+}
+
+void AnnoncesList::addAnnonce(const QString &ref)
+{
+    QString tmp;
+    if (ref.startsWith("//"))
+        tmp = "https:" + ref;
+    else
+        tmp = ref;
+    m_href << tmp;
+}
+
+void AnnoncesList::linkUpdated(const int &id, const QString &newUrl)
+{
+    m_linksToUpdate[id] = newUrl;
+}
+
+void AnnoncesList::updateLinks()
+{
+    foreach (const int &id, m_linksToUpdate.keys())
+    {
+        qWarning() << "links to update" << id << m_linksToUpdate[id];
     }
 }

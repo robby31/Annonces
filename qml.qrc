@@ -1,5 +1,12 @@
 <RCC>
     <qresource prefix="/">
-        <file>main.qml</file>
+        <file>qml/main.qml</file>
+        <file>images/exit.png</file>
+        <file>qml/Pages/ApplicationPages.qml</file>
+        <file>qml/Pages/Navigator.qml</file>
+        <file>qml/Pages/Annonces.qml</file>
+        <file>qml/Pages/AnnoncesDelegate.qml</file>
+        <file>images/view-refresh.png</file>
+        <file>qml/Pages/Annonce.qml</file>
     </qresource>
 </RCC>

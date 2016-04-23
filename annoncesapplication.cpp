@@ -6,10 +6,14 @@ AnnoncesApplication::AnnoncesApplication(int argc, char **argv) :
     worker(0),
     m_db(QSqlDatabase::addDatabase("QSQLITE"))
 {
+    qmlRegisterType<SqlListModel>("Models", 1, 0, "SqlListModel");
+    qmlRegisterType<ListModel>("Models", 1, 0, "CListModel");
+    qmlRegisterType<CheckedSqlListModel>("Models", 1, 0, "CheckedSqlListModel");
+
     connect(this, SIGNAL(mainQmlLoaded(QObject*)), this, SLOT(InterfaceLoaded(QObject*)));
     addController("homepagecontroller", &controller);
 
-    m_db.setDatabaseName("data.sql");
+    m_db.setDatabaseName("/Users/doudou/workspaceQT/Annonces/data.sql");
     if (!m_db.open())
     {
         qWarning() << "unable to open database";
@@ -35,8 +39,8 @@ AnnoncesApplication::AnnoncesApplication(int argc, char **argv) :
                         "urgent INTEGER, "
                         "pro INTEGER,"
                         "person TEXT,"
-                        "date TIMESTAMP NOT NULL, "
-                        "created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
+                        "date DATETIME NOT NULL, "
+                        "created_date DATETIME DEFAULT CURRENT_DATETIME, "
                         "lieu TEXT, "
                         "ville TEXT, "
                         "code_postal TEXT, "
@@ -47,6 +51,8 @@ AnnoncesApplication::AnnoncesApplication(int argc, char **argv) :
                         "energie TEXT, "
                         "prix_m2 REAL, "
                         "prix INTEGER, "
+                        "marque TEXT, "
+                        "modele TEXT, "
                         "annee_modele INTEGER, "
                         "carburant TEXT, "
                         "bv TEXT, "

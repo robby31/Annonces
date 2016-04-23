@@ -16,7 +16,6 @@ public:
 
     virtual int currentPage();
     virtual QUrl nextPageUrl();
-
 };
 
 #endif // LEBONCOINLIST_H

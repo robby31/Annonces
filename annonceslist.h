@@ -23,7 +23,7 @@ public:
     QStringList href() const { return m_href; }
 
     virtual void readAnnonces(const QByteArray &data) = 0;
-    void addAnnonce(const QString &ref) { m_href << ref; }
+    void addAnnonce(const QString &ref);
 
     virtual void parseAnnonce(const QUrl &url, const QByteArray &data) = 0;
 
@@ -33,6 +33,7 @@ public:
 
 private:
     void requestAnnonce(const QUrl &url);
+    void updateLinks();
 
 signals:
     void progress(const int &value);
@@ -41,12 +42,17 @@ signals:
 private slots:
     void pageLoaded();
     void annonceLoaded();
+    void replyError(const QNetworkReply::NetworkError &error);
+    void abort();
+    void linkUpdated(const int &id, const QString &newUrl);
 
 private:
     QNetworkReply *m_reply;
     QStringList m_href;
     int m_nbpages;
     bool allPagesLoaded;
+    bool m_abort;
+    QHash<int, QString> m_linksToUpdate;
 };
 
 #endif // ANNONCESLIST_H

@@ -1,33 +1,17 @@
 import QtQuick 2.3
 import QtQuick.Controls 1.2
+import QtWebView 1.0
 import MyComponents 1.0
-import QtWebKit 3.0
 
-ApplicationWindow {
-    visible: true
-    width: 640
-    height: 480
-
-    signal importResults(url url)
-
-    AirbusThemeDefault {
-        id: theme
-    }
-
-    Header {
-        id: header
-        width: parent.width
-        height: 30
-    }
+Page {
+    width: 300
+    height: 200
 
     Row {
         id: cmdBar
 
         height: 30
         width: parent.width
-        anchors {
-            top: header.bottom
-        }
 
         Button {
             text: "Home"
@@ -56,6 +40,7 @@ ApplicationWindow {
     }
 
     ScrollView {
+        id: scrollwebview
         width: parent.width
         anchors {
             top: cmdBar.bottom
@@ -64,15 +49,27 @@ ApplicationWindow {
 
         WebView {
             id: webview
-            anchors.fill: parent
+            width: scrollwebview.width
+            height: scrollwebview.height
             url: "http://www.leboncoin.fr/voitures/offres/midi_pyrenees/occasions/?f=a&th=1&pe=22&brd=Bmw&q=330"
         }
     }
 
-    BusyIndicator {
-        visible: homepagecontroller.busy
-        activity: homepagecontroller.activity
-        activityProgress: homepagecontroller.activityProgress
-        anchors.fill: parent
+    actions: pageActions
+
+    onActionClicked: {
+        if (name == "Quit")
+            Qt.quit()
+    }
+
+    ListModel {
+        id: pageActions
+
+        ListElement {
+            name: "Quit"
+            description: "exit application"
+            icon: "qrc:///images/exit.png"
+        }
     }
 }
+

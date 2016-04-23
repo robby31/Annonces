@@ -8,6 +8,8 @@
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QDebug>
+#include "Models/sqllistmodel.h"
+#include <QDir>
 
 class AnnoncesApplication : public Application
 {

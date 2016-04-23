@@ -8,29 +8,32 @@ LeBonCoinList::LeBonCoinList(QNetworkReply *reply, QObject *parent):
 void LeBonCoinList::readAnnonces(const QByteArray &data)
 {
     // parse all annonces
-    QRegularExpression lbc("<div class=\"list-lbc\">(.*)", QRegularExpression::MultilineOption | QRegularExpression::DotMatchesEverythingOption);
-    QRegularExpressionMatch res = lbc.match(data);
-    if (res.hasMatch())
+
+    // links of annonces
+    QRegularExpression ref("<li>.+?<a href=\"([^\"]+)\"(.+?)</a>", QRegularExpression::MultilineOption | QRegularExpression::DotMatchesEverythingOption);
+    QRegularExpressionMatchIterator it = ref.globalMatch(data);
+    while (it.hasNext())
     {
-        QRegularExpression ref("<a href=\"([^\"]+)\"(.+?)</a>", QRegularExpression::MultilineOption | QRegularExpression::DotMatchesEverythingOption);
-        QRegularExpressionMatchIterator it = ref.globalMatch(res.captured(1));
-        while (it.hasNext())
+        QRegularExpressionMatch match = it.next();
+        if (match.captured(0).contains("class=\"list_item clearfix trackable\"") && !match.captured(1).contains("gallery"))
+            addAnnonce(match.captured(1));
+    }
+
+    // get number of pages
+    QRegularExpression refPage("<a class=\"element page\" href=\"([^\"]+)\"(.+?)</a>", QRegularExpression::MultilineOption | QRegularExpression::DotMatchesEverythingOption);
+    QRegularExpressionMatchIterator itPage = refPage.globalMatch(data);
+    while (itPage.hasNext())
+    {
+        QRegularExpressionMatch match = itPage.next();
+
+        // read the number of pages to parse to get all annonces
+        QRegularExpression pages("o=(\\d+)");
+        QRegularExpressionMatch pages_matched = pages.match(match.captured(0));
+        if (pages_matched.hasMatch())
         {
-            QRegularExpressionMatch match = it.next();
-            if (match.captured(2).contains("<div class=\"lbc\">"))
-                addAnnonce(match.captured(1));
-            else
-            {
-                // read the number of pages to parse to get all annonces
-                QRegularExpression pages("o=(\\d+)");
-                QRegularExpressionMatch pages_matched = pages.match(match.captured(1));
-                if (pages_matched.hasMatch())
-                {
-                    int nb = pages_matched.captured(1).toInt();
-                    if (nb>0 && nbPages()<nb)
-                        setPages(nb);
-                }
-            }
+            int nb = pages_matched.captured(1).toInt();
+            if (nb>0 && nbPages()<nb)
+                setPages(nb);
         }
     }
 }
@@ -66,9 +69,8 @@ QUrl LeBonCoinList::nextPageUrl()
 
 void LeBonCoinList::parseAnnonce(const QUrl &url, const QByteArray &data)
 {
-    qWarning() << "parsse annonce" << url;
-
     LeBonCoin annonce(url, data);
+    connect(&annonce, SIGNAL(linkUpdated(int,QString)), this, SLOT(linkUpdated(int,QString)));
     annonce.importData();
 
 //    QFile file("annonce.txt");
