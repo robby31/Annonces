@@ -1,6 +1,6 @@
 TEMPLATE = app
 
-QT += qml quick widgets xml sql
+QT += qml quick widgets xml sql webview
 
 CONFIG += c++11
 
@@ -15,11 +15,8 @@ SOURCES += main.cpp \
 
 RESOURCES += qml.qrc
 
-# Additional import path used to resolve QML modules in Qt Creator's code model
-QML_IMPORT_PATH = C:/Users/NJUT/Documents/workspaceQT/robby31-qmlmodulesplugins
-
 # Default rules for deployment.
-include(deployment.pri)
+include (deployment.pri)
 
 include (../QmlApplication/QmlApplication.prf)
 
