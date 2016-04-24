@@ -93,10 +93,10 @@ Page {
     Dialog {
         id: filterDialog
         title: "Filter annonces"
-        width: 500
-        height: 300
 
         contentItem: FilteringDialog {
+            implicitWidth: 500
+            implicitHeight: 300
             columnModel: annoncesModel.columnsToFilter
             columnDataModel: annoncesModel.columnDataModel
 
