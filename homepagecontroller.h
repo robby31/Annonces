@@ -11,11 +11,14 @@ public:
     explicit Homepagecontroller(QObject *parent = 0);
 
 signals:
-    void importAllResultsSignal(const QUrl &url);
+    void importAllResultsSignal(const int &parserId);
+    void saveLinkSignal(const QUrl &url, const QString &parserType, const QString &title);
+    void removeParserSignal(const int &parserId);
 
 public slots:
-    void importAllResults(const QUrl &url);
-
+    void importAllResults(const int &parserId);
+    void saveLink(const QUrl &url, const QString &parserType, const QString &title);
+    void removeParser(const int &parserId);
 };
 
 #endif // HOMEPAGECONTROLLER_H

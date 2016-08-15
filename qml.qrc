@@ -8,5 +8,10 @@
         <file>qml/Pages/AnnoncesDelegate.qml</file>
         <file>images/view-refresh.png</file>
         <file>qml/Pages/Annonce.qml</file>
+        <file>qml/Pages/SaveDialog.qml</file>
+        <file>qml/Pages/SavedAnnonces.qml</file>
+        <file>qml/Pages/SavedAnnoncesDelegate.qml</file>
+        <file>qml/Pages/AnnoncesListView.qml</file>
+        <file>images/arrow.png</file>
     </qresource>
 </RCC>

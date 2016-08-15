@@ -1,7 +1,7 @@
 #include "leboncoinlist.h"
 
-LeBonCoinList::LeBonCoinList(QNetworkReply *reply, QObject *parent):
-    AnnoncesList(reply, parent)
+LeBonCoinList::LeBonCoinList(int parserId, QNetworkReply *reply, QObject *parent):
+    AnnoncesList(parserId, reply, parent)
 {
 }
 
@@ -69,14 +69,7 @@ QUrl LeBonCoinList::nextPageUrl()
 
 void LeBonCoinList::parseAnnonce(const QUrl &url, const QByteArray &data)
 {
-    LeBonCoin annonce(url, data);
+    LeBonCoin annonce(parserId(), url, data);
     connect(&annonce, SIGNAL(linkUpdated(int,QString)), this, SLOT(linkUpdated(int,QString)));
     annonce.importData();
-
-//    QFile file("annonce.txt");
-//    if (file.open(QIODevice::ReadWrite))
-//    {
-//        file.write(data);
-//        file.close();
-//    }
 }

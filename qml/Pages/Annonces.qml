@@ -1,6 +1,7 @@
 import QtQuick 2.3
 import QtQuick.Controls 1.2
 import QtQuick.Dialogs 1.2
+import QtQuick.Layouts 1.3
 import Models 1.0
 import MyComponents 1.0
 
@@ -8,43 +9,13 @@ Page {
     width: 300
     height: 200
 
-    actions: pageActions
-
-    onActionClicked: {
-        if (name == "Quit")
-            Qt.quit()
-        else if (name == "Refresh")
-            annoncesModel.reload()
-        else if (name == "Filter")
-            filterDialog.visible = true
-    }
-
-    ListModel {
-        id: pageActions
-
-        ListElement {
-            name: "Refresh"
-            description: "reload annonces"
-            icon: "qrc:///images/view-refresh.png"
-        }
-
-        ListElement {
-            name: "Filter"
-            description: "filter annonces"
-            icon: "qrc:///images/view-refresh.png"
-        }
-
-        ListElement {
-            name: "Quit"
-            description: "exit application"
-            icon: "qrc:///images/exit.png"
-        }
-    }
+    property int parserId: -1
 
     SqlListModel {
         id: annoncesModel
+        connectionName: "Annonces"
         tablename: "annonces"
-        query: "SELECT *, (SELECT prix.prix from prix WHERE prix.annonceid=annonces.id ORDER BY prix.date DESC LIMIT 1) AS price from annonces ORDER BY annonces.created_date DESC"
+        query: "SELECT *, (SELECT prix.prix from prix WHERE prix.annonceid=annonces.id ORDER BY prix.date DESC LIMIT 1) AS price from annonces WHERE parserId=%1 ORDER BY annonces.created_date DESC".arg(parserId)
 
         Component.onCompleted: {
             annoncesModel.addColumnToFilter("is_active")
@@ -60,34 +31,86 @@ Page {
         }
     }
 
-    ScrollView {
-        id: listAnnonces
-        anchors.fill: parent
-        visible: !annonce.visible
-
-        ListView {
-            anchors.fill: parent
-            model: annoncesModel
-
-            delegate: AnnoncesDelegate { }
-            focus: true
-            highlightFollowsCurrentItem: false
-            clip: true
-
-            function selectAnnonce(id, url, date, created_date) {
-                annonce.setSource("Annonce.qml", {id: id, url: url, date: date, created_date: created_date})
-            }
-        }
-    }
-
-    function back() {
-        annonce.source = ""
-    }
-
     Loader {
         id: annonce
         anchors.fill: parent
         visible: item != null
+    }
+
+    ColumnLayout {
+        id: columnAnnonces
+        anchors.fill: parent
+        visible: !annonce.visible
+        spacing: 0
+
+        Rectangle {
+            id: header
+            height: 40
+            Layout.fillWidth: true
+
+            gradient: Gradient {
+                GradientStop { position: 0.0; color: theme.gradientStartColor }
+                GradientStop { position: 1.0; color: theme.gradientEndColor }
+            }
+
+            MyButton {
+                id: backButton
+                anchors.left: parent.left
+                anchors.leftMargin: 10
+                sourceComponent: Text { text: "< Back" }
+                onButtonClicked: backToSavedAnnonces()
+            }
+
+            MyButton {
+                id: refreshButton
+                anchors.left: backButton.right
+                anchors.leftMargin: 10
+                sourceComponent: Text { text: "Refresh" }
+                onButtonClicked: importResults(parserId)
+            }
+
+            MyButton {
+                anchors.right: text.left
+                anchors.rightMargin: 10
+                sourceComponent: Text { text: "Filter" }
+                onButtonClicked: filterDialog.visible = true
+            }
+
+
+            Text {
+                id: text
+                anchors { right: parent.right; rightMargin: 10; verticalCenter: parent.verticalCenter }
+                width: contentWidth
+                height: contentHeight
+                text: annoncesModel ? annoncesModel.rowCount + " annonces." : ""
+                color: "blue"
+            }
+        }
+
+        ScrollView {
+            id: listAnnonces
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+
+            ListView {
+                anchors.fill: parent
+                model: annoncesModel
+
+                delegate: AnnoncesDelegate { }
+                focus: true
+                highlightFollowsCurrentItem: false
+                clip: true
+
+                function selectAnnonce(id, url, date, created_date) {
+                    annonce.setSource("Annonce.qml", {id: id, url: url, date: date, created_date: created_date})
+                }
+            }
+        }
+    }
+
+
+    function back() {
+        annonce.source = ""
     }
 
     Dialog {

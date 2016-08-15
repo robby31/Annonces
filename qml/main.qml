@@ -6,7 +6,16 @@ import "Pages"
 MyApplication {
     id: mainWindow
 
-    signal importResults(url url)
+    property var pageLoaded
+    onItemLoaded: pageLoaded = item
+
+    signal importResults(int url)
+    signal saveLink(url url, string parserType, string title)
+
+    function parserUpdated() {
+        if (pageLoaded)
+            pageLoaded.parserUpdated()
+    }
 
     controller: homepagecontroller
     modelButtons : mybuttons
@@ -29,8 +38,6 @@ MyApplication {
     Component {
         id: myPages
 
-        ApplicationPages {
-
-        }
+        ApplicationPages { id: pages }
     }
 }

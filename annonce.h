@@ -9,14 +9,16 @@
 #include <QDebug>
 #include <QDateTime>
 #include <QRegularExpression>
+#include "mysqldatabase.h"
 
 class Annonce : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit Annonce(QUrl url, QByteArray data, QObject *parent = 0);
+    explicit Annonce(int parserId, QUrl url, QByteArray data, QObject *parent = 0);
 
+    int parserId() const { return m_parserId; }
     void importData();
 
     QByteArray data() const { return m_data; }
@@ -49,6 +51,7 @@ signals:
     void linkUpdated(const int &id, const QString &newUrl);
 
 private:
+    int m_parserId;
     QUrl m_url;
     QByteArray m_data;
 };

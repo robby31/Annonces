@@ -11,7 +11,7 @@ class LeBonCoin : public Annonce
     Q_OBJECT
 
 public:
-    explicit LeBonCoin(QUrl url, QByteArray data, QObject *parent = 0);
+    explicit LeBonCoin(int parserId, QUrl url, QByteArray data, QObject *parent = 0);
 
     virtual QDateTime date() { return m_date; }
     virtual QString titre();

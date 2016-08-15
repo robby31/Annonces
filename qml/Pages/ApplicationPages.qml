@@ -6,7 +6,6 @@ import MyComponents 1.0
 
 Item {
     id: pages
-    anchors { fill:parent; topMargin: mainWindow.headerHeight }
 
     function toggleMenu() {
         if (mainWindow.state==="NAVIGATOR")
@@ -15,13 +14,17 @@ Item {
             annonces.toggleMenu()
     }
 
+    function parserUpdated() {
+        annonces.parserUpdated()
+    }
+
     Navigator {
         id: navigator
         anchors.fill: parent
         visible: mainWindow.state === "NAVIGATOR"
     }
 
-    Annonces {
+    SavedAnnonces {
         id: annonces
         anchors.fill: parent
         visible: mainWindow.state === "ANNONCES"

@@ -1,7 +1,8 @@
 #include "annonceslist.h"
 
-AnnoncesList::AnnoncesList(QNetworkReply *reply, QObject *parent) :
+AnnoncesList::AnnoncesList(int parserId, QNetworkReply *reply, QObject *parent) :
     QObject(parent),
+    m_parserId(parserId),
     m_reply(reply),
     m_href(),
     m_nbpages(-1),
@@ -131,6 +132,9 @@ void AnnoncesList::annonceLoaded()
 void AnnoncesList::abort()
 {
     m_abort = true;
+
+    QSqlDatabase db = GET_DATABASE("Annonces");
+    db.rollback();
 }
 
 void AnnoncesList::addAnnonce(const QString &ref)
@@ -150,8 +154,41 @@ void AnnoncesList::linkUpdated(const int &id, const QString &newUrl)
 
 void AnnoncesList::updateLinks()
 {
-    foreach (const int &id, m_linksToUpdate.keys())
+    QSqlDatabase db = GET_DATABASE("Annonces");
+
+    if (db.isOpen())
     {
-        qWarning() << "links to update" << id << m_linksToUpdate[id];
+        foreach (const int &id, m_linksToUpdate.keys())
+        {
+            qWarning() << "links to update" << id << m_linksToUpdate[id];
+            QSqlQuery query(db);
+
+            query.prepare("SELECT is_active, ref from annonces WHERE id=:id");
+            query.bindValue(":id", id);
+            if (query.exec() && query.next())
+            {
+                if (query.record().value("is_active").toBool())
+                {
+                    qCritical() << "annonce" << id << "is active, cannot update the link.";
+                }
+                else
+                {
+                    // update the link of exsting annonce
+                    query.prepare("UPDATE annonces SET ref=:value WHERE id=:id");
+                    query.bindValue(":id", id);
+                    query.bindValue(":value", m_linksToUpdate[id]);
+                    if (!query.exec())
+                        qCritical() << "unable to update annonce" << id << query.lastError().text();
+                }
+            }
+            else
+            {
+               qCritical() << "unable to find annonce" << id << query.lastError().text();
+            }
+        }
+    }
+    else
+    {
+        qCritical() << "cannot open database to update links.";
     }
 }

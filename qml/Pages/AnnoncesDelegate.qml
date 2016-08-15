@@ -7,7 +7,7 @@ Rectangle {
     id: delegate
     width: parent.width
     height: annonces.height
-    clip: true
+    border.color: "black"
 
     Rectangle {
         id: hover
@@ -41,7 +41,7 @@ Rectangle {
 
             Image {
                 id: picture
-                width: 200
+                width: 150
                 height: parent.height
                 source: model["img"]
                 fillMode: Image.PreserveAspectFit
@@ -60,7 +60,7 @@ Rectangle {
                         id: annonceId
                         width: 50
                         height: parent.height
-                        font.pointSize: 18
+                        font.pixelSize: 18
                         text: model["id"]
                         elide: Text.ElideRight
                         color: annonces.color
@@ -71,7 +71,7 @@ Rectangle {
                         id: annonceDate
                         width: 200
                         height: parent.height
-                        font.pointSize: 18
+                        font.pixelSize: 18
                         text: Qt.formatDateTime(model["created_date"], "dd MMM yyyy")
                         elide: Text.ElideRight
                         color: annonces.color
@@ -82,7 +82,7 @@ Rectangle {
                         id: annonceLieu
                         width: 400
                         height: parent.height
-                        font.pointSize: 18
+                        font.pixelSize: 18
                         text: model["code_postal"] + " - " + model["ville"]
                         elide: Text.ElideRight
                         color: annonces.color
@@ -93,7 +93,7 @@ Rectangle {
                         id: annonceModele
                         width: 300
                         height: parent.height
-                        font.pointSize: 18
+                        font.pixelSize: 18
                         text: model["marque"] + " " + model["modele"] + " " + model["carburant"] + " " + model["bv"]
                         elide: Text.ElideRight
                         color: annonces.color
@@ -104,7 +104,7 @@ Rectangle {
                         id: annonceAnnee
                         width: 100
                         height: parent.height
-                        font.pointSize: 18
+                        font.pixelSize: 18
                         text: model["annee_modele"]
                         elide: Text.ElideRight
                         color: annonces.color
@@ -115,7 +115,7 @@ Rectangle {
                         id: annonceKm
                         width: 200
                         height: parent.height
-                        font.pointSize: 18
+                        font.pixelSize: 18
                         text: model["km"] + " km"
                         elide: Text.ElideRight
                         color: annonces.color
@@ -131,7 +131,7 @@ Rectangle {
                         id: annonceTitre
                         width: parent.width-annoncePrix.width
                         height: parent.height
-                        font.pointSize: 18
+                        font.pixelSize: 18
                         text: model["titre"]
                         elide: Text.ElideRight
                         color: annonces.color
@@ -142,7 +142,7 @@ Rectangle {
                         id: annoncePrix
                         width: 200
                         height: parent.height
-                        font.pointSize: 18
+                        font.pixelSize: 18
                         font.bold: true
                         text: model["price"] + " euros"
                         elide: Text.ElideRight

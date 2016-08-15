@@ -1,7 +1,7 @@
 #include "leboncoin.h"
 
-LeBonCoin::LeBonCoin(QUrl url, QByteArray data, QObject *parent) :
-    Annonce(url, data, parent),
+LeBonCoin::LeBonCoin(int parserId, QUrl url, QByteArray data, QObject *parent) :
+    Annonce(parserId, url, data, parent),
     m_date(),
     m_titre(),
     m_person(),

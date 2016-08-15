@@ -9,7 +9,7 @@ class LeBonCoinList : public AnnoncesList
     Q_OBJECT
 
 public:
-    explicit LeBonCoinList(QNetworkReply *reply = 0, QObject *parent = 0);
+    explicit LeBonCoinList(int parserId, QNetworkReply *reply = 0, QObject *parent = 0);
 
     virtual void readAnnonces(const QByteArray &data);
     virtual void parseAnnonce(const QUrl &url, const QByteArray &data);

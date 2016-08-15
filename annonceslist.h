@@ -5,14 +5,19 @@
 #include <QNetworkReply>
 #include <QFile>
 #include <QRegularExpression>
-
+#include <QSqlQuery>
+#include <QSqlError>
+#include <QSqlRecord>
+#include "mysqldatabase.h"
 
 class AnnoncesList : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit AnnoncesList(QNetworkReply *reply = 0, QObject *parent = 0);
+    explicit AnnoncesList(int parserId, QNetworkReply *reply = 0, QObject *parent = 0);
+
+    int parserId() const { return m_parserId; }
 
     bool save(const QByteArray &data, QString pathname);
 
@@ -47,6 +52,7 @@ private slots:
     void linkUpdated(const int &id, const QString &newUrl);
 
 private:
+    int m_parserId;
     QNetworkReply *m_reply;
     QStringList m_href;
     int m_nbpages;
