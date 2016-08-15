@@ -4,6 +4,8 @@ import QtQuick.Layouts 1.1
 import QtWebView 1.0
 import MyComponents 1.0
 import Models 1.0
+import QtCharts 2.0
+import QtGraphicalEffects 1.0
 
 Item {
     width: 600
@@ -19,69 +21,45 @@ Item {
     onIdChanged: {
         priceModel.query = "SELECT * from prix WHERE annonceid=%1".arg(id)
 
-        var ChartBarData = {
-            labels: [],
-            datasets: [{
-                    fillColor: "rgba(151,187,205,0.5)",
-                    strokeColor: "rgba(151,187,205,1)",
-                    data: []
-                }]
-        }
+        priceSerie.clear()
 
-        ChartBarData.labels.push("")
-        ChartBarData.datasets[0].data.push(0)
+        xaxis.min = priceModel.minDate()
+        xaxis.max = priceModel.maxDate()
 
         for (var i=0;i<priceModel.rowCount;++i) {
-            var str_date = Date.fromLocaleString(Qt.locale(), priceModel.get(i, "date"), "yyyy-MM-ddThh:mm:ss.zzz").toLocaleDateString(Qt.locale(), "d MMM")
-            ChartBarData.labels.push(str_date)
-
-            ChartBarData.datasets[0].data.push(priceModel.get(i, "prix"))
+            priceSerie.append(priceModel.getDate(i), priceModel.get(i, "prix"))
         }
 
-        chart_bar.chartData = ChartBarData
+        priceSerie.append(priceModel.getCurrentDate(), priceModel.getCurrentPrice())
     }
 
-    SqlListModel {
+    PriceModel {
         id: priceModel
+        connectionName: "Annonces"
+        tablename: "prix"
         query: "SELECT * from prix WHERE annonceid=%1".arg(id)
     }
 
     ColumnLayout {
-        anchors { fill: parent; topMargin: 10 }
-        spacing: 10
+        anchors { fill: parent }
+        spacing: 0
 
-        Row{
+        Row {
             spacing: 10
             height: 100
+            width: parent.width
 
-            Rectangle {
+            MyButton {
                 id: backButton
-                width: 60
-                height: 30
-                color: backButtonMouseArea.pressed? theme.highlightSelectColor : theme.highlightColor
-                radius: 10
-                border.color: theme.separatorColor
-                clip: true
-                opacity: 1
-
-                Text {
-                    anchors.centerIn: parent
-                    font.pixelSize:14
-                    text: "< Back"
-                }
-
-                MouseArea {
-                    id: backButtonMouseArea
-                    anchors.fill: parent
-                    onClicked: back()
-                }
+                sourceComponent: Text { text: "< Back"; font.pixelSize: 16 }
+                onButtonClicked: back()
             }
 
             Column
             {
                 spacing: 5
                 width: textDate.width
-                height: parent.height
+                anchors.verticalCenter: parent.verticalCenter
 
                 Text {
                     id: textDate
@@ -101,15 +79,20 @@ Item {
                 }
             }
 
-            Chart {
-              id: chart_bar
+            ChartView {
+              id: chartview
               width: 300
               height: parent.height
-              chartAnimated: true
-              chartAnimationEasing: Easing.OutBounce
-              chartAnimationDuration: 2000
-              chartType: Charts.ChartType.BAR
-              chartOptions: ({ barShowStroke: true, scaleLabel: "<%=value%> €", barValueSpacing: 30 })
+              antialiasing: true
+
+              legend.visible: false
+
+              AreaSeries {
+                  id: serie
+                  axisX: DateTimeAxis { id: xaxis; tickCount: 3; format: "dd MMM yyyy" }
+                  upperSeries: LineSeries { id: priceSerie }
+                  color: "lightsteelblue"
+              }
             }
         }
 

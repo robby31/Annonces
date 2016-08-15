@@ -1,6 +1,6 @@
 TEMPLATE = app
 
-QT += qml quick widgets xml sql webview
+QT += qml quick widgets xml charts
 
 CONFIG += c++11
 
@@ -11,7 +11,8 @@ SOURCES += main.cpp \
     annonceslist.cpp \
     leboncoinlist.cpp \
     annonce.cpp \
-    leboncoin.cpp
+    leboncoin.cpp \
+    pricemodel.cpp
 
 RESOURCES += qml.qrc
 
@@ -27,4 +28,5 @@ HEADERS += \
     annonceslist.h \
     leboncoinlist.h \
     annonce.h \
-    leboncoin.h
+    leboncoin.h \
+    pricemodel.h
