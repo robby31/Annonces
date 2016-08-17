@@ -104,6 +104,7 @@ void AnnoncesApplication::InterfaceLoaded(QObject *obj)
     connect(&controller, SIGNAL(saveLinkSignal(QUrl,QString,QString)), worker, SLOT(saveLink(QUrl,QString,QString)));
 
     connect(worker, SIGNAL(parserUpdated()), obj, SLOT(parserUpdated()));
+    connect(worker, SIGNAL(annoncesUpdated()), obj, SLOT(annoncesUpdated()));
 
     connect(&controller, SIGNAL(removeParserSignal(int)), worker, SLOT(removeParser(int)));
 

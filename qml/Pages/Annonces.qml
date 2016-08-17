@@ -11,6 +11,10 @@ Page {
 
     property int parserId: -1
 
+    function annoncesUpdated() {
+        annoncesModel.reload()
+    }
+
     SqlListModel {
         id: annoncesModel
         connectionName: "Annonces"

@@ -40,6 +40,11 @@ Page {
             loader.item.parserUpdated()
     }
 
+    function annoncesUpdated() {
+        if (loader.source == "qrc:/qml/Pages/Annonces.qml")
+            loader.item.annoncesUpdated()
+    }
+
     Loader {
         id: loader
         anchors.fill: parent

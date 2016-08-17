@@ -23,6 +23,7 @@ private:
 signals:
     void initializeSignal();
     void parserUpdated();
+    void annoncesUpdated();
 
 public slots:
     void initializeDatabase();

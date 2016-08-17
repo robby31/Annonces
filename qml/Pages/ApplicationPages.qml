@@ -18,6 +18,10 @@ Item {
         annonces.parserUpdated()
     }
 
+    function annoncesUpdated() {
+        annonces.annoncesUpdated()
+    }
+
     Navigator {
         id: navigator
         anchors.fill: parent

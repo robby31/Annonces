@@ -60,6 +60,8 @@ void ApplicationWorker::allResultsRead()
 
     QSqlDatabase db = GET_DATABASE("Annonces");
     db.commit();
+
+    emit annoncesUpdated();
 }
 
 void ApplicationWorker::initializeDatabase()

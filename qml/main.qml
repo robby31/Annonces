@@ -17,6 +17,11 @@ MyApplication {
             pageLoaded.parserUpdated()
     }
 
+    function annoncesUpdated() {
+        if (pageLoaded)
+            pageLoaded.annoncesUpdated()
+    }
+
     controller: homepagecontroller
     modelButtons : mybuttons
     pages: myPages
