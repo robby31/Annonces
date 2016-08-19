@@ -67,11 +67,11 @@ void ApplicationWorker::allResultsRead()
 void ApplicationWorker::initializeDatabase()
 {
     QSqlDatabase db = CREATE_DATABASE("QSQLITE", "Annonces");
-    db.setDatabaseName("C:/Users/NJUT/Documents/workspaceQT/Annonces/data.sql");
+    db.setDatabaseName("/Users/doudou/workspaceQT/Annonces/data.sql");
 
     if (!db.open())
     {
-        qCritical() << "unable to open database";
+        qCritical() << "unable to open database" << db.lastError().text();
     }
     else
     {

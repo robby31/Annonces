@@ -17,7 +17,7 @@ class AnnoncesApplication : public Application
     Q_OBJECT
 
 public:
-    explicit AnnoncesApplication(int argc, char **argv);
+    explicit AnnoncesApplication(int &argc, char **argv);
     virtual ~AnnoncesApplication();
 
 signals:

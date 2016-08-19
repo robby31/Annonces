@@ -1,6 +1,6 @@
 #include "annoncesapplication.h"
 
-int main(int argc, char *argv[])
+int main(int argc, char **argv)
 {
     AnnoncesApplication app(argc, argv);
 

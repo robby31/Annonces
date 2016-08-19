@@ -1,6 +1,6 @@
 #include "annoncesapplication.h"
 
-AnnoncesApplication::AnnoncesApplication(int argc, char **argv) :
+AnnoncesApplication::AnnoncesApplication(int &argc, char **argv) :
     Application(argc, argv),
     controller(this),
     worker(0)
@@ -14,11 +14,11 @@ AnnoncesApplication::AnnoncesApplication(int argc, char **argv) :
     addController("homepagecontroller", &controller);
 
     QSqlDatabase db = CREATE_DATABASE("QSQLITE", "Annonces");
-    db.setDatabaseName("C:/Users/NJUT/Documents/workspaceQT/Annonces/data.sql");
+    db.setDatabaseName("/Users/doudou/workspaceQT/Annonces/data.sql");
 
     if (!db.open())
     {
-        qCritical() << "unable to open database";
+        qCritical() << "unable to open database" << db.lastError().text();
     }
     else
     {
