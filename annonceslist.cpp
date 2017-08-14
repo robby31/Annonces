@@ -15,6 +15,10 @@ AnnoncesList::AnnoncesList(int parserId, QNetworkReply *reply, QObject *parent) 
         connect(reply, SIGNAL(finished()), this, SLOT(pageLoaded()));
         connect(this, SIGNAL(destroyed(QObject*)), reply, SLOT(deleteLater()));
     }
+    else
+    {
+        qCritical() << this << "invalid reply" << reply;
+    }
 }
 
 QUrl AnnoncesList::url() const
@@ -55,30 +59,46 @@ bool AnnoncesList::atEnd()
 }
 
 void AnnoncesList::pageLoaded()
-{
+{        
     QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
 
     QByteArray data = reply->readAll();
+    qDebug() << "page loaded" << url() << data.size() << "bytes," << nbPages()-currentPage() << "to read.";
     readAnnonces(data);
 
 //    save(data, "results.txt");
 
     if  (!atEnd())
     {
+        bool errorRaised = false;
+
         if (m_reply != reply)
         {
             m_reply->deleteLater();
             m_reply = reply;
         }
-        else if (href().size() >= 1)
+        else
         {
-            // first page loaded, start loading of first annonce
-            requestAnnonce(m_href.at(0));
+            // start to read annonces
+            if (href().size() >= 1)
+            {
+                // first page loaded, start loading of first annonce
+                requestAnnonce(m_href.at(0));
+            }
+            else
+            {
+                errorRaised = true;
+                emit error("no annonce to read.");
+            }
         }
 
-        QNetworkReply *reply = m_reply->manager()->get(QNetworkRequest(nextPageUrl()));
-        connect(reply, SIGNAL(finished()), this, SLOT(pageLoaded()));
-        connect(this, SIGNAL(destroyed(QObject*)), reply, SLOT(deleteLater()));
+        if (!errorRaised)
+        {
+            // read next page
+            QNetworkReply *reply = m_reply->manager()->get(QNetworkRequest(nextPageUrl()));
+            connect(reply, SIGNAL(finished()), this, SLOT(pageLoaded()));
+            connect(this, SIGNAL(destroyed(QObject*)), reply, SLOT(deleteLater()));
+        }
     }
     else
     {
@@ -88,6 +108,7 @@ void AnnoncesList::pageLoaded()
 
 void AnnoncesList::requestAnnonce(const QUrl &url)
 {
+    qDebug() << "request Annonce" << url;
     QNetworkReply *reply = m_reply->manager()->get(QNetworkRequest(url));
     connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(replyError(QNetworkReply::NetworkError)));
     connect(reply, SIGNAL(finished()), this, SLOT(annonceLoaded()));
@@ -102,6 +123,7 @@ void AnnoncesList::replyError(const QNetworkReply::NetworkError &error)
 void AnnoncesList::annonceLoaded()
 {
     QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
+    qDebug() << "annonce loaded" << reply->request().url().toString();
     int index = href().indexOf(reply->request().url().toString());
     QByteArray data = reply->readAll();
     if (data.size()>0)
@@ -139,12 +161,7 @@ void AnnoncesList::abort()
 
 void AnnoncesList::addAnnonce(const QString &ref)
 {
-    QString tmp;
-    if (ref.startsWith("//"))
-        tmp = "https:" + ref;
-    else
-        tmp = ref;
-    m_href << tmp;
+    m_href << url().resolved(ref).toString();
 }
 
 void AnnoncesList::linkUpdated(const int &id, const QString &newUrl)

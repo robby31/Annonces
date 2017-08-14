@@ -43,6 +43,7 @@ private:
 signals:
     void progress(const int &value);
     void finished();
+    void error(const QString &message);
 
 private slots:
     void pageLoaded();

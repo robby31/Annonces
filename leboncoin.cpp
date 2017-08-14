@@ -107,15 +107,13 @@ QString LeBonCoin::titre()
 
 QUrl LeBonCoin::picture()
 {
-    QRegularExpression pattern("<meta itemprop=\"image\" content=\"(.*?)\" />", QRegularExpression::MultilineOption | QRegularExpression::DotMatchesEverythingOption);
+    QRegularExpression pattern("data-imgSrc=\"(.+?)\"", QRegularExpression::MultilineOption | QRegularExpression::DotMatchesEverythingOption);
     QRegularExpressionMatchIterator iter = pattern.globalMatch(data());
     while (iter.hasNext())
     {
         QRegularExpressionMatch match = iter.next();
-        QString url = match.captured(1).trimmed();
-        if (url.startsWith("//"))
-            url = "http:" + url;
-        return QUrl(url);
+        QString img_url = match.captured(1).trimmed();
+        return QUrl(url().resolved(img_url));
     }
 
     return QUrl();

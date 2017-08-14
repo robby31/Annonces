@@ -10,7 +10,7 @@ void LeBonCoinList::readAnnonces(const QByteArray &data)
     // parse all annonces
 
     // links of annonces
-    QRegularExpression ref("<li>.+?<a href=\"([^\"]+)\"(.+?)</a>", QRegularExpression::MultilineOption | QRegularExpression::DotMatchesEverythingOption);
+    QRegularExpression ref("<li itemscope.+?<a href=\"([^\"]+)\"(.+?)</a>", QRegularExpression::MultilineOption | QRegularExpression::DotMatchesEverythingOption);
     QRegularExpressionMatchIterator it = ref.globalMatch(data);
     while (it.hasNext())
     {
@@ -18,6 +18,7 @@ void LeBonCoinList::readAnnonces(const QByteArray &data)
         if (match.captured(0).contains("class=\"list_item clearfix trackable\"") && !match.captured(1).contains("gallery"))
             addAnnonce(match.captured(1));
     }
+    qDebug() << href().size() << "pages to read";
 
     // get number of pages
     QRegularExpression refPage("<a class=\"element page\" href=\"([^\"]+)\"(.+?)</a>", QRegularExpression::MultilineOption | QRegularExpression::DotMatchesEverythingOption);
