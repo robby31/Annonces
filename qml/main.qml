@@ -2,6 +2,7 @@ import QtQuick 2.3
 import QtQuick.Controls 1.2
 import MyComponents 1.0
 import "Pages"
+import QtQuick.Dialogs 1.2
 
 MyApplication {
     id: mainWindow
@@ -11,6 +12,10 @@ MyApplication {
 
     signal importResults(int url)
     signal saveLink(url url, string parserType, string title)
+
+    function chooseDatabase() {
+        chooseDatabaseDialog.open()
+    }
 
     function parserUpdated() {
         if (pageLoaded)
@@ -24,7 +29,7 @@ MyApplication {
 
     controller: homepagecontroller
     modelButtons : mybuttons
-    pages: myPages
+    srcPages: _app.databasePathName.toString() === "" ? "SelectDatabase.qml" : "Pages/ApplicationPages.qml"
 
     ListModel {
         id: mybuttons
@@ -40,9 +45,11 @@ MyApplication {
         }
     }
 
-    Component {
-        id: myPages
-
-        ApplicationPages { id: pages }
+    FileDialog {
+        id: chooseDatabaseDialog
+        selectExisting: true
+        title: "Choose database file"
+        nameFilters: [ "Database (*.sql)" ]
+        onAccepted: _app.databasePathName = fileUrl
     }
 }

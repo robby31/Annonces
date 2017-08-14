@@ -51,7 +51,7 @@ Item {
 
             MyButton {
                 id: backButton
-                sourceComponent: Text { text: "< Back"; font.pixelSize: 16 }
+                sourceComponent: Text { text: "< Back"; font.pointSize: 10 }
                 onButtonClicked: back()
             }
 

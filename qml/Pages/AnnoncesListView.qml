@@ -8,6 +8,7 @@ import MyComponents 1.0
 ColumnLayout {
     id: columnAnnonces
     anchors.fill: parent
+    spacing: 0
 
     function parserUpdated() {
         annoncesModel.reload()

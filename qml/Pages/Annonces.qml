@@ -61,7 +61,8 @@ Page {
                 id: backButton
                 anchors.left: parent.left
                 anchors.leftMargin: 10
-                sourceComponent: Text { text: "< Back" }
+                anchors.verticalCenter: parent.verticalCenter
+                sourceComponent: Text { text: "< Back"; font.pointSize: 9 }
                 onButtonClicked: backToSavedAnnonces()
             }
 
@@ -69,14 +70,16 @@ Page {
                 id: refreshButton
                 anchors.left: backButton.right
                 anchors.leftMargin: 10
-                sourceComponent: Text { text: "Refresh" }
+                anchors.verticalCenter: parent.verticalCenter
+                sourceComponent: Text { text: "Refresh"; font.pointSize: 9 }
                 onButtonClicked: importResults(parserId)
             }
 
             MyButton {
                 anchors.right: text.left
                 anchors.rightMargin: 10
-                sourceComponent: Text { text: "Filter" }
+                anchors.verticalCenter: parent.verticalCenter
+                sourceComponent: Text { text: "Filter"; font.pointSize: 9 }
                 onButtonClicked: filterDialog.visible = true
             }
 
@@ -86,6 +89,7 @@ Page {
                 anchors { right: parent.right; rightMargin: 10; verticalCenter: parent.verticalCenter }
                 width: contentWidth
                 height: contentHeight
+                font.pointSize: 9
                 text: annoncesModel ? annoncesModel.rowCount + " annonces." : ""
                 color: "blue"
             }

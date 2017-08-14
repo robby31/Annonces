@@ -1,93 +1,80 @@
 import QtQuick 2.3
-import QtQuick.Controls 1.2
+import QtQuick.Controls 2.1
 import QtQuick.Layouts 1.1
 import MyComponents 1.0
 import QtGraphicalEffects 1.0
 
-Item {
+ListViewDelegate {
     id: delegate
     width: parent.width
-    height: annonces.height
+    height: 40
 
-    Rectangle {
-        id: hover
-        anchors.fill: parent
-        color: theme.hoverColor
-        visible: mouseArea.containsMouse
-    }
+    swipe.left: Label {
+        id: deleteLabel
+        text: qsTr("Remove")
+        color: "white"
+        verticalAlignment: Label.AlignVCenter
+        padding: 12
+        height: parent.height
+        anchors.left: parent.left
 
-    Rectangle {
-        id: highlight
-        anchors.fill: parent
-        gradient: Gradient {
-            GradientStop { position: 0.0; color: theme.highlightGradientStart }
-            GradientStop { position: 1.0; color: theme.highlightGradientEnd }
+        SwipeDelegate.onClicked: {
+            swipe.close()
+            _app.removeParser(model["id"])
         }
-        visible: mouseArea.pressed
+
+        background: Rectangle {
+            color: deleteLabel.SwipeDelegate.pressed ? Qt.darker("tomato", 1.1) : "tomato"
+        }
     }
 
-    RowLayout {
-        id: annonces
-        height: 40
-        anchors { left: parent.left; right: arrow.left; verticalCenter: parent.verticalCenter }
+    contentItem: Item {
+        RowLayout {
+            id: annonces
+            anchors { left: parent.left; right: arrow.left; verticalCenter: parent.verticalCenter }
 
-        MyButton {
-            id: remove
-            sourceComponent: Text { text: "Remove" }
-            onButtonClicked: _app.removeParser(model["id"])
+            Text {
+                id: title
+                Layout.fillWidth: true
+                height: parent.height
+                font.pointSize: 10
+                text: model["title"]
+                elide: Text.ElideRight
+                verticalAlignment: Text.AlignVCenter
+            }
+
+            Text {
+                id: parserType
+                width: contentWidth
+                height: parent.height
+                font.pointSize: 10
+                text: model["parser_type"]
+                verticalAlignment: Text.AlignVCenter
+            }
+        }
+
+        Image {
+            id: arrow
+            source: "qrc:/images/arrow.png"
+            height: 25
+            width: 25
+            anchors {verticalCenter: parent.verticalCenter; right: parent.right}
             visible: delegate.ListView.isCurrentItem
+
+            MouseArea {
+                id: arrowMouseArea
+                anchors.fill: parent
+                onClicked: selectSavedAnnonce(model["id"])
+            }
         }
 
-        Text {
-            id: title
-            Layout.fillWidth: true
-            height: parent.height
-            font.pixelSize: 18
-            text: model["title"]
-            elide: Text.ElideRight
-            verticalAlignment: Text.AlignVCenter
+        Colorize {
+            anchors.fill: arrow
+            source: arrow
+            hue: 0.0
+            saturation: 0.5
+            lightness: 1.0
+            visible: arrowMouseArea.pressed
         }
-
-        Text {
-            id: parserType
-            width: contentWidth
-            height: parent.height
-            font.pixelSize: 18
-            text: model["parser_type"]
-            verticalAlignment: Text.AlignVCenter
-        }
-    }
-
-    Image {
-        id: arrow
-        source: "qrc:/images/arrow.png"
-        height: parent.height/2
-        width: height
-        anchors {verticalCenter: parent.verticalCenter; right: parent.right; rightMargin: 10}
-        visible: delegate.ListView.isCurrentItem
-
-        MouseArea {
-            id: arrowMouseArea
-            anchors.fill: parent
-            onClicked: selectSavedAnnonce(model["id"])
-        }
-    }
-
-    Colorize {
-        anchors.fill: arrow
-        source: arrow
-        hue: 0.0
-        saturation: 0.5
-        lightness: 1.0
-        visible: mouseArea.pressed || arrowMouseArea.pressed
-    }
-
-    MouseArea {
-        id: mouseArea
-        anchors.fill: parent
-        hoverEnabled: true
-        visible: !delegate.ListView.isCurrentItem
-        onClicked: delegate.ListView.view.currentIndex = index
     }
 }
-

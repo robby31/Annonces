@@ -1,164 +1,161 @@
 import QtQuick 2.3
-import QtQuick.Controls 1.2
+import QtQuick.Controls 2.1
 import QtQuick.Layouts 1.1
 import MyComponents 1.0
+import QtGraphicalEffects 1.0
 
-Rectangle {
+ListViewDelegate {
     id: delegate
     width: parent.width
-    height: annonces.height
-    border.color: "black"
+    height: 100
 
-    Rectangle {
-        id: hover
-        anchors.fill: parent
-        color: theme.hoverColor
-        visible: mouseArea.containsMouse
-    }
-
-    Rectangle {
-        id: highlight
-        anchors.fill: parent
-        gradient: Gradient {
-            GradientStop { position: 0.0; color: theme.highlightGradientStart }
-            GradientStop { position: 1.0; color: theme.highlightGradientEnd }
-        }
-        visible: mouseArea.pressed
-    }
-
-    Item {
+    contentItem: Item {
         id: annonces
-        height: 100
-        width: parent.width
-        anchors { right: parent.right; verticalCenter: parent.verticalCenter }
 
         property color color: model["is_active"]===1 ? "black" : "grey"
 
         Row {
             id: annonceText
-            anchors.fill: parent
-            spacing: 10
+            anchors { left: parent.left; right: arrow.left; top: parent.top; bottom: parent.bottom }
+            spacing: 5
+            clip: true
 
             Image {
                 id: picture
-                width: 150
-                height: parent.height
+                height: delegate.height
                 source: model["img"]
                 fillMode: Image.PreserveAspectFit
                 asynchronous: true
             }
 
             Column {
-                width: parent.width-picture.width
-                height: parent.height
+                spacing: 10
+                width: parent.width - picture.width - parent.spacing
+                anchors.verticalCenter: parent.verticalCenter
 
                 Row {
-                    height: parent.height/2
                     width: parent.width
 
                     Text {
                         id: annonceId
                         width: 50
-                        height: parent.height
                         font.pixelSize: 18
                         text: model["id"]
                         elide: Text.ElideRight
                         color: annonces.color
                         verticalAlignment: Text.AlignVCenter
+                        clip: true
                     }
 
                     Text {
                         id: annonceDate
                         width: 200
-                        height: parent.height
                         font.pixelSize: 18
                         text: Qt.formatDateTime(model["created_date"], "dd MMM yyyy")
                         elide: Text.ElideRight
                         color: annonces.color
                         verticalAlignment: Text.AlignVCenter
+                        clip: true
                     }
 
                     Text {
                         id: annonceLieu
                         width: 400
-                        height: parent.height
                         font.pixelSize: 18
                         text: model["code_postal"] + " - " + model["ville"]
                         elide: Text.ElideRight
                         color: annonces.color
                         verticalAlignment: Text.AlignVCenter
+                        clip: true
                     }
 
                     Text {
                         id: annonceModele
                         width: 300
-                        height: parent.height
                         font.pixelSize: 18
                         text: model["marque"] + " " + model["modele"] + " " + model["carburant"] + " " + model["bv"]
                         elide: Text.ElideRight
                         color: annonces.color
                         verticalAlignment: Text.AlignVCenter
+                        clip: true
                     }
 
                     Text {
                         id: annonceAnnee
-                        width: 100
-                        height: parent.height
+                        width: 50
                         font.pixelSize: 18
                         text: model["annee_modele"]
                         elide: Text.ElideRight
                         color: annonces.color
                         verticalAlignment: Text.AlignVCenter
+                        clip: true
                     }
 
                     Text {
                         id: annonceKm
                         width: 200
-                        height: parent.height
                         font.pixelSize: 18
                         text: model["km"] + " km"
                         elide: Text.ElideRight
                         color: annonces.color
                         verticalAlignment: Text.AlignVCenter
+                        clip: true
                     }
                 }
 
                 Row {
-                    height: parent.height/2
                     width: parent.width
+                    spacing: 10
 
                     Text {
                         id: annonceTitre
-                        width: parent.width-annoncePrix.width
-                        height: parent.height
                         font.pixelSize: 18
+                        width: parent.width - annoncePrix.width - parent.spacing*2
                         text: model["titre"]
                         elide: Text.ElideRight
                         color: annonces.color
                         verticalAlignment: Text.AlignVCenter
+                        clip: true
                     }
 
                     Text {
                         id: annoncePrix
-                        width: 200
-                        height: parent.height
+                        width: contentWidth
                         font.pixelSize: 18
                         font.bold: true
                         text: model["price"] + " euros"
-                        elide: Text.ElideRight
                         color: annonces.color
+                        horizontalAlignment: Text.AlignRight
                         verticalAlignment: Text.AlignVCenter
+                        clip: true
                     }
                 }
             }
         }
-    }
 
-    MouseArea {
-        id: mouseArea
-        anchors.fill: parent
-        hoverEnabled: true
-        onClicked: delegate.ListView.view.selectAnnonce(model["id"], model["ref"], model["date"], model["created_date"])
+        Image {
+            id: arrow
+            source: "qrc:/images/arrow.png"
+            height: 25
+            width: 25
+            anchors {verticalCenter: parent.verticalCenter; right: parent.right}
+            visible: delegate.ListView.isCurrentItem
+
+            MouseArea {
+                id: arrowMouseArea
+                anchors.fill: parent
+                onClicked: delegate.ListView.view.selectAnnonce(model["id"], model["ref"], model["date"], model["created_date"])
+            }
+        }
+
+        Colorize {
+            anchors.fill: arrow
+            source: arrow
+            hue: 0.0
+            saturation: 0.5
+            lightness: 1.0
+            visible: arrowMouseArea.pressed
+        }
     }
 }
 
