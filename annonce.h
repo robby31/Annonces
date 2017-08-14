@@ -23,6 +23,8 @@ public:
 
     QByteArray data() const { return m_data; }
 
+    QUrl url() const;
+
     virtual QDateTime date() = 0;
     virtual QString titre() = 0;
     virtual QString person() = 0;

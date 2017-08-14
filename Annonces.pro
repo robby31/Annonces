@@ -1,8 +1,10 @@
 TEMPLATE = app
 
-QT += qml quick widgets xml charts
+QT += qml quick widgets xml charts sql webview
 
 CONFIG += c++11
+
+CONFIG(release, debug|release):DEFINES += QT_NO_DEBUG_OUTPUT
 
 SOURCES += main.cpp \
     homepagecontroller.cpp \

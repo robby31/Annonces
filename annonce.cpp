@@ -9,6 +9,11 @@ Annonce::Annonce(int parserId, QUrl url, QByteArray data, QObject *parent) :
 
 }
 
+QUrl Annonce::url() const
+{
+    return m_url;
+}
+
 void Annonce::importData()
 {
     QSqlDatabase db = GET_DATABASE("Annonces");
