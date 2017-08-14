@@ -2,26 +2,67 @@
 
 AnnoncesApplication::AnnoncesApplication(int &argc, char **argv) :
     Application(argc, argv),
+    m_settings("G. HIMBERT", "Annonces"),
     controller(this),
-    worker(0)
-{
-    qmlRegisterType<SqlListModel>("Models", 1, 0, "SqlListModel");
-    qmlRegisterType<ListModel>("Models", 1, 0, "CListModel");
-    qmlRegisterType<CheckedSqlListModel>("Models", 1, 0, "CheckedSqlListModel");
+    worker(Q_NULLPTR)
+{    
     qmlRegisterType<PriceModel>("Models", 1, 0, "PriceModel");
+
+    connect(this, SIGNAL(databaseOpened(QUrl)), this, SLOT(initializeDatabase()));
 
     connect(this, SIGNAL(mainQmlLoaded(QObject*)), this, SLOT(InterfaceLoaded(QObject*)));
     addController("homepagecontroller", &controller);
+}
 
-    QSqlDatabase db = CREATE_DATABASE("QSQLITE", "Annonces");
-    db.setDatabaseName("/Users/doudou/workspaceQT/Annonces/data.sql");
-
-    if (!db.open())
+AnnoncesApplication::~AnnoncesApplication()
+{
+    QSqlDatabase db = database();
+    if (db.isOpen())
     {
-        qCritical() << "unable to open database" << db.lastError().text();
+        QSqlQuery query(db);
+        if (!query.exec("VACUUM"))
+            qDebug() << "unable to clean database" << query.lastError().text();
     }
-    else
+}
+
+void AnnoncesApplication::InterfaceLoaded(QObject *obj)
+{
+    // start worker
+    worker = new ApplicationWorker();
+    addWorker(&controller, worker);
+
+    connect(obj, SIGNAL(importResults(int)), &controller, SLOT(importAllResults(int)));
+    connect(&controller, SIGNAL(importAllResultsSignal(int)), worker, SLOT(importAllResults(int)));
+
+    connect(obj, SIGNAL(saveLink(QUrl,QString,QString)), &controller, SLOT(saveLink(QUrl,QString,QString)));
+    connect(&controller, SIGNAL(saveLinkSignal(QUrl,QString,QString)), worker, SLOT(saveLink(QUrl,QString,QString)));
+
+    connect(worker, SIGNAL(parserUpdated()), obj, SLOT(parserUpdated()));
+    connect(worker, SIGNAL(annoncesUpdated()), obj, SLOT(annoncesUpdated()));
+
+    connect(&controller, SIGNAL(removeParserSignal(int)), worker, SLOT(removeParser(int)));
+
+    setdatabaseDiverName("QSQLITE");
+    setdatabaseConnectionName("Annonces");
+
+    QString path = m_settings.value("databasePathName").toString();
+    if (!path.isEmpty())
+        setdatabasePathName(QUrl::fromLocalFile(path));
+}
+
+void AnnoncesApplication::removeParser(const int &parserId)
+{
+    controller.removeParser(parserId);
+}
+
+void AnnoncesApplication::initializeDatabase()
+{
+    QSqlDatabase db = database();
+
+    if (db.isOpen())
     {
+        m_settings.setValue("databasePathName", db.databaseName());
+
         QSqlQuery query(db);
         if (!query.exec("PRAGMA foreign_keys = ON;"))
             qCritical() << "unable to active foreign key";
@@ -73,7 +114,7 @@ AnnoncesApplication::AnnoncesApplication(int &argc, char **argv) :
                         " url TEXT UNIQUE)"))
             qCritical() << query.lastError().text();
 
-         // table to store properties
+        // table to store properties
         if (!query.exec("create table IF NOT EXISTS properties "
                         "(id INTEGER PRIMARY KEY, "
                         "annonceId NOT NULL REFERENCES annonces, "
@@ -81,37 +122,8 @@ AnnoncesApplication::AnnoncesApplication(int &argc, char **argv) :
                         "value TEXT)"))
             qCritical() << query.lastError().text();
     }
-}
-
-AnnoncesApplication::~AnnoncesApplication()
-{
-    QSqlDatabase db = GET_DATABASE("Annonces");
-    QSqlQuery query(db);
-    if (!query.exec("VACUUM"))
-        qDebug() << "unable to clean database" << query.lastError().text();
-}
-
-void AnnoncesApplication::InterfaceLoaded(QObject *obj)
-{
-    // start worker
-    worker = new ApplicationWorker();
-    addWorker(&controller, worker);
-
-    connect(obj, SIGNAL(importResults(int)), &controller, SLOT(importAllResults(int)));
-    connect(&controller, SIGNAL(importAllResultsSignal(int)), worker, SLOT(importAllResults(int)));
-
-    connect(obj, SIGNAL(saveLink(QUrl,QString,QString)), &controller, SLOT(saveLink(QUrl,QString,QString)));
-    connect(&controller, SIGNAL(saveLinkSignal(QUrl,QString,QString)), worker, SLOT(saveLink(QUrl,QString,QString)));
-
-    connect(worker, SIGNAL(parserUpdated()), obj, SLOT(parserUpdated()));
-    connect(worker, SIGNAL(annoncesUpdated()), obj, SLOT(annoncesUpdated()));
-
-    connect(&controller, SIGNAL(removeParserSignal(int)), worker, SLOT(removeParser(int)));
-
-    worker->initialize();
-}
-
-void AnnoncesApplication::removeParser(const int &parserId)
-{
-    controller.removeParser(parserId);
+    else
+    {
+        qCritical() << "database not open, cannot initialize database.";
+    }
 }

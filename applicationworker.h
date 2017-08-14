@@ -7,6 +7,7 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include "leboncoinlist.h"
+#include <QUrl>
 
 class ApplicationWorker : public Worker
 {
@@ -15,20 +16,17 @@ class ApplicationWorker : public Worker
 public:
     explicit ApplicationWorker(QObject *parent = 0);
 
-    void initialize() { emit initializeSignal(); }
-
 private:
     bool removePrix(QSqlDatabase db, const int &parserId);
 
 signals:
-    void initializeSignal();
     void parserUpdated();
     void annoncesUpdated();
 
 public slots:
-    void initializeDatabase();
     void importAllResults(const int &parserId);
     void allResultsRead();
+    void errorRaised(const QString &message);
     void saveLink(const QUrl &url, const QString &parserType, const QString &title);
     void removeParser(const int &parserId);
 

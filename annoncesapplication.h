@@ -4,11 +4,9 @@
 #include "application.h"
 #include "homepagecontroller.h"
 #include "applicationworker.h"
-#include "mysqldatabase.h"
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QDebug>
-#include "Models/sqllistmodel.h"
 #include "pricemodel.h"
 #include <QDir>
 
@@ -23,10 +21,12 @@ public:
 signals:
 
 public slots:
+    void initializeDatabase();
     void InterfaceLoaded(QObject *obj);
     void removeParser(const int &parserId);
 
 private:
+    QSettings m_settings;
     Homepagecontroller controller;
     ApplicationWorker *worker;
 };

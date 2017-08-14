@@ -4,7 +4,6 @@ ApplicationWorker::ApplicationWorker(QObject *parent) :
     Worker(parent),
     nam(this)
 {
-    connect(this, SIGNAL(initializeSignal()), this, SLOT(initializeDatabase()));
 }
 
 void ApplicationWorker::importAllResults(const int &parserId)
@@ -41,14 +40,21 @@ void ApplicationWorker::importAllResults(const int &parserId)
             QNetworkReply *reply = nam.get(QNetworkRequest(url));
             LeBonCoinList *list = new LeBonCoinList(parserId, reply);
             connect(list, SIGNAL(progress(int)), this, SIGNAL(progress(int)));
+            connect(list, SIGNAL(error(QString)), this, SLOT(errorRaised(QString)));
             connect(list, SIGNAL(finished()), this, SLOT(allResultsRead()));
             connect(this, SIGNAL(processAborted()), list, SLOT(abort()));
         }
         else
         {
+            qCritical() << query.lastError().text();
             emit errorDuringProcess("Unable to define Url.");
         }
     }
+}
+
+void ApplicationWorker::errorRaised(const QString &message)
+{
+    emit errorDuringProcess(message);
 }
 
 void ApplicationWorker::allResultsRead()
@@ -62,23 +68,6 @@ void ApplicationWorker::allResultsRead()
     db.commit();
 
     emit annoncesUpdated();
-}
-
-void ApplicationWorker::initializeDatabase()
-{
-    QSqlDatabase db = CREATE_DATABASE("QSQLITE", "Annonces");
-    db.setDatabaseName("/Users/doudou/workspaceQT/Annonces/data.sql");
-
-    if (!db.open())
-    {
-        qCritical() << "unable to open database" << db.lastError().text();
-    }
-    else
-    {
-        QSqlQuery query(db);
-        if (!query.exec("PRAGMA foreign_keys = ON;"))
-            qCritical() << "unable to active foreign key";
-    }
 }
 
 void ApplicationWorker::saveLink(const QUrl &url, const QString &parserType, const QString &title)
