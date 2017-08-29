@@ -6,7 +6,7 @@ import QtGraphicalEffects 1.0
 
 ListViewDelegate {
     id: delegate
-    width: parent.width
+    width: parent ? parent.width : 0
     height: 100
 
     contentItem: Item {

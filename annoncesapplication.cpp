@@ -12,6 +12,13 @@ AnnoncesApplication::AnnoncesApplication(int &argc, char **argv) :
 
     connect(this, SIGNAL(mainQmlLoaded(QObject*)), this, SLOT(InterfaceLoaded(QObject*)));
     addController("homepagecontroller", &controller);
+
+    setdatabaseDiverName("QSQLITE");
+    setdatabaseConnectionName("Annonces");
+
+    QString path = m_settings.value("databasePathName").toString();
+    if (!path.isEmpty())
+        setdatabasePathName(QUrl::fromLocalFile(path));
 }
 
 AnnoncesApplication::~AnnoncesApplication()
@@ -41,13 +48,6 @@ void AnnoncesApplication::InterfaceLoaded(QObject *obj)
     connect(worker, SIGNAL(annoncesUpdated()), obj, SLOT(annoncesUpdated()));
 
     connect(&controller, SIGNAL(removeParserSignal(int)), worker, SLOT(removeParser(int)));
-
-    setdatabaseDiverName("QSQLITE");
-    setdatabaseConnectionName("Annonces");
-
-    QString path = m_settings.value("databasePathName").toString();
-    if (!path.isEmpty())
-        setdatabasePathName(QUrl::fromLocalFile(path));
 }
 
 void AnnoncesApplication::removeParser(const int &parserId)

@@ -102,10 +102,7 @@ void ApplicationWorker::saveLink(const QUrl &url, const QString &parserType, con
                 if (query.exec())
                 {
                     emit parserUpdated();
-
-                    // load annonces
-                    int parserId = query.lastInsertId().toInt();
-                    importAllResults(parserId);
+                    emit processOver();
                 }
                 else
                 {

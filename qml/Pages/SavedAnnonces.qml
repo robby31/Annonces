@@ -1,5 +1,5 @@
 import QtQuick 2.3
-import QtQuick.Controls 1.2
+import QtQuick.Controls 2.2
 import QtQuick.Dialogs 1.2
 import QtQuick.Layouts 1.3
 import Models 1.0
@@ -27,8 +27,8 @@ Page {
     }
 
 
-    function selectSavedAnnonce(id) {
-        loader.setSource("Annonces.qml", {parserId: id})
+    function selectSavedAnnonce(id, title) {
+        loader.setSource("Annonces.qml", {parserId: id, title: title})
     }
 
     function backToSavedAnnonces() {

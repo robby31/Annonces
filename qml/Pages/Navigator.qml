@@ -1,44 +1,103 @@
 import QtQuick 2.3
-import QtQuick.Controls 1.2
+import QtQuick.Controls 2.2
+import QtQuick.Layouts 1.3
 import QtWebView 1.0
 import MyComponents 1.0
 import QtQuick.Dialogs 1.2
 
-Page {
+Item {
+    id: item
+
     width: 300
     height: 200
 
-    Row {
+    signal close()
+
+    ListModel {
+        id: parserModel
+        ListElement { name: "LeBonCoin"; url: "https://www.leboncoin.fr/voitures/offres/midi_pyrenees/occasions/"}
+    }
+
+    function checkUrl(url, indexParser) {
+        return url.toString().startsWith(parserModel.get(indexParser).url) && titleField.text != ""
+    }
+
+    RowLayout {
         id: cmdBar
 
-        height: 30
         width: parent.width
+        height: 30
 
-        Button {
-            text: "Home"
-            onClicked: webview.url = "http://www.leboncoin.fr/"
+        ComboBox {
+            id: parserCombo
+            anchors.verticalCenter: parent.verticalCenter
+            width: 200
+            Layout.preferredHeight: parent.height
+
+            model: parserModel
+            textRole: "name"
+            onCurrentIndexChanged: webview.url = parserModel.get(currentIndex).url
         }
 
         Button {
+            anchors.verticalCenter: parent.verticalCenter
+            Layout.preferredHeight: parent.height
+            text: "Reload"
+            onClicked: webview.reload()
+        }
+
+        Button {
+            anchors.verticalCenter: parent.verticalCenter
+            Layout.preferredHeight: parent.height
+            text: "Home"
+            onClicked: {
+                var index = parserCombo.currentIndex
+                if (index >= 0)
+                    webview.url = parserModel.get(index).url
+            }
+        }
+
+
+        Button {
+            anchors.verticalCenter: parent.verticalCenter
+            Layout.preferredHeight: parent.height
             text: "Prev"
             onClicked: webview.goBack()
         }
 
         Button {
+            anchors.verticalCenter: parent.verticalCenter
+            Layout.preferredHeight: parent.height
             text: "Next"
             onClicked: webview.goForward()
         }
 
 
-        Button {
-            text: "Save"
-            onClicked: saveDialog.visible = true
+        TextField {
+            id: titleField
+            Layout.fillWidth: true
+            Layout.preferredHeight: parent.height
+            placeholderText: "choose title"
         }
 
-//        TextField {
-//            height: parent.height
-//            onAccepted: importResults(text)
-//        }
+        Button {
+            anchors.verticalCenter: parent.verticalCenter
+            Layout.preferredHeight: parent.height
+            text: "Save"
+            enabled: checkUrl(webview.url, parserCombo.currentIndex)
+
+            onClicked: {
+                if (titleField.text != "")
+                    saveLink(webview.url, parserCombo.currentText, titleField.text)
+            }
+        }
+
+        Button {
+            anchors.verticalCenter: parent.verticalCenter
+            Layout.preferredHeight: parent.height
+            text: "Close"
+            onClicked: close()
+        }
     }
 
     ScrollView {
@@ -53,50 +112,6 @@ Page {
             id: webview
             width: scrollwebview.width
             height: scrollwebview.height
-            url: "http://www.leboncoin.fr/voitures/offres/midi_pyrenees/occasions/?f=a&th=1&pe=22&brd=Bmw&q=330"
-            Component.onCompleted: url = "http://www.leboncoin.fr/voitures/offres/midi_pyrenees/occasions/?f=a&th=1&pe=22&brd=Bmw&q=330"
-        }
-    }
-
-    actions: pageActions
-
-    onActionClicked: {
-        if (name == "Quit")
-            Qt.quit()
-    }
-
-    ListModel {
-        id: pageActions
-
-        ListElement {
-            name: "Quit"
-            description: "exit application"
-            icon: "qrc:///images/exit.png"
-        }
-    }
-
-    Dialog {
-        id: saveDialog
-        title: "Save annonces"
-        standardButtons: StandardButton.Ok | StandardButton.Cancel
-        width: 500
-        height: 300
-        visible: false
-
-        contentItem: SaveDialog {
-            id: saveItem
-            implicitWidth: 400
-            implicitHeight: 120
-
-            onSave: saveDialog.click(StandardButton.Ok)
-            onCancel: saveDialog.click(StandardButton.Cancel)
-        }
-
-        onAccepted: {
-            if (saveItem.title != "")
-                saveLink(webview.url, saveItem.parser, saveItem.title)
-            else
-                rejected()
         }
     }
 }

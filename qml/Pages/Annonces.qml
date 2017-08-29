@@ -1,5 +1,5 @@
 import QtQuick 2.3
-import QtQuick.Controls 1.2
+import QtQuick.Controls 2.2
 import QtQuick.Dialogs 1.2
 import QtQuick.Layouts 1.3
 import Models 1.0
@@ -10,6 +10,7 @@ Page {
     height: 200
 
     property int parserId: -1
+    property string title: ""
 
     function annoncesUpdated() {
         annoncesModel.reload()
@@ -62,7 +63,7 @@ Page {
                 anchors.left: parent.left
                 anchors.leftMargin: 10
                 anchors.verticalCenter: parent.verticalCenter
-                sourceComponent: Text { text: "< Back"; font.pointSize: 9 }
+                sourceComponent: Text { text: "< Annonces"; font.pixelSize: 12 }
                 onButtonClicked: backToSavedAnnonces()
             }
 
@@ -71,15 +72,24 @@ Page {
                 anchors.left: backButton.right
                 anchors.leftMargin: 10
                 anchors.verticalCenter: parent.verticalCenter
-                sourceComponent: Text { text: "Refresh"; font.pointSize: 9 }
+                sourceComponent: Text { text: "Refresh"; font.pixelSize: 12 }
                 onButtonClicked: importResults(parserId)
+            }
+
+            Text {
+                id: textTitle
+                text: title
+                anchors.left: refreshButton.right
+                anchors.leftMargin: 10
+                anchors.verticalCenter: parent.verticalCenter
+                font.bold: true
             }
 
             MyButton {
                 anchors.right: text.left
                 anchors.rightMargin: 10
                 anchors.verticalCenter: parent.verticalCenter
-                sourceComponent: Text { text: "Filter"; font.pointSize: 9 }
+                sourceComponent: Text { text: "Filter"; font.pixelSize: 12 }
                 onButtonClicked: filterDialog.visible = true
             }
 
@@ -89,8 +99,8 @@ Page {
                 anchors { right: parent.right; rightMargin: 10; verticalCenter: parent.verticalCenter }
                 width: contentWidth
                 height: contentHeight
-                font.pointSize: 9
-                text: annoncesModel ? annoncesModel.rowCount + " annonces." : ""
+                font.pixelSize: 12
+                text: annoncesModel ? annoncesModel.rowCount + " annonces" : ""
                 color: "blue"
             }
         }

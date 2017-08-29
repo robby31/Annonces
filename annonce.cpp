@@ -71,7 +71,7 @@ void Annonce::importData()
                             // update prix
                             if (queryPrix.value("prix") != prix())
                             {
-                                qWarning() << "UPDATE prix" << queryPrix.value("date") << queryPrix.value("prix") << "-->" << prix();
+                                qWarning() << "UPDATE" << querySelect.value("id").toLongLong() << "prix" << queryPrix.value("date") << queryPrix.value("prix").toInt() << "-->" << prix();
 
                                 queryPrix.prepare("INSERT INTO prix (annonceid, date, prix) VALUES (:id, :date, :prix)");
                                 queryPrix.bindValue(":id", querySelect.value("id"));
@@ -208,7 +208,7 @@ bool Annonce::updateParam(const qlonglong &id, const QString &param, const QVari
     if (old != value)
     {
         if (param != "is_active" && param != "date")
-            qWarning() << "UPDATE" << param << old << "-->" << value;
+            qWarning() << "UPDATE" << id << param << old << "-->" << value;
         return updateData("annonces", id, param, value);
     }
     else

@@ -6,7 +6,7 @@ import QtGraphicalEffects 1.0
 
 ListViewDelegate {
     id: delegate
-    width: parent.width
+    width: parent ? parent.width : 0
     height: 40
 
     swipe.left: Label {
@@ -37,7 +37,7 @@ ListViewDelegate {
                 id: title
                 Layout.fillWidth: true
                 height: parent.height
-                font.pointSize: 10
+                font.pixelSize: 14
                 text: model["title"]
                 elide: Text.ElideRight
                 verticalAlignment: Text.AlignVCenter
@@ -47,7 +47,7 @@ ListViewDelegate {
                 id: parserType
                 width: contentWidth
                 height: parent.height
-                font.pointSize: 10
+                font.pixelSize: 14
                 text: model["parser_type"]
                 verticalAlignment: Text.AlignVCenter
             }
@@ -64,7 +64,7 @@ ListViewDelegate {
             MouseArea {
                 id: arrowMouseArea
                 anchors.fill: parent
-                onClicked: selectSavedAnnonce(model["id"])
+                onClicked: selectSavedAnnonce(model["id"], model["title"])
             }
         }
 

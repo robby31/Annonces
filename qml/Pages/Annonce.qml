@@ -1,5 +1,5 @@
 import QtQuick 2.3
-import QtQuick.Controls 1.2
+import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.1
 import QtWebView 1.0
 import MyComponents 1.0
@@ -23,9 +23,6 @@ Item {
 
         priceSerie.clear()
 
-        xaxis.min = priceModel.minDate()
-        xaxis.max = priceModel.maxDate()
-
         for (var i=0;i<priceModel.rowCount;++i) {
             priceSerie.append(priceModel.getDate(i), priceModel.get(i, "prix"))
         }
@@ -40,24 +37,28 @@ Item {
         query: "SELECT * from prix WHERE annonceid=%1".arg(id)
     }
 
-    ColumnLayout {
+    Column {
         anchors { fill: parent }
         spacing: 0
 
         Row {
-            spacing: 10
-            height: 100
-            width: parent.width
+            id: row
+            spacing: 0
+            height: 200
+            width: parent.width - 20
+            anchors.horizontalCenter: parent.horizontalCenter
 
             MyButton {
                 id: backButton
-                sourceComponent: Text { text: "< Back"; font.pointSize: 10 }
+                anchors { top: parent.top; topMargin: 10 }
+                sourceComponent: Text { text: "< Back"; font.pixelSize: 12 }
                 onButtonClicked: back()
             }
 
             Column
             {
-                spacing: 5
+                id: columnDate
+                spacing: 20
                 width: textDate.width
                 anchors.verticalCenter: parent.verticalCenter
 
@@ -81,15 +82,15 @@ Item {
 
             ChartView {
               id: chartview
-              width: 300
+              width: parent.width - backButton.width - columnDate.width
               height: parent.height
               antialiasing: true
 
-              legend.visible: false
+              legend { visible: false }
 
               AreaSeries {
                   id: serie
-                  axisX: DateTimeAxis { id: xaxis; tickCount: 3; format: "dd MMM yyyy" }
+                  axisX: DateTimeAxis { format: "dd MMM yyyy" }
                   upperSeries: LineSeries { id: priceSerie }
                   color: "lightsteelblue"
               }
@@ -99,8 +100,9 @@ Item {
 
         ScrollView {
             id: scrollwebview
-            Layout.fillWidth: true
-            Layout.fillHeight: true
+
+            width: parent.width
+            height: parent.height - row.height
 
             WebView {
                 id: webview

@@ -1,5 +1,5 @@
 import QtQuick 2.3
-import QtQuick.Controls 1.2
+import QtQuick.Controls 2.2
 import MyComponents 1.0
 import "Pages"
 import QtQuick.Dialogs 1.2
@@ -33,11 +33,6 @@ MyApplication {
 
     ListModel {
         id: mybuttons
-
-        ListElement {
-            title: "Search"
-            state: "NAVIGATOR"
-        }
 
         ListElement {
             title: "Annonces"
