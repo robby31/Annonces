@@ -63,46 +63,53 @@ void AnnoncesList::pageLoaded()
     QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
 
     QByteArray data = reply->readAll();
-    qDebug() << "page loaded" << url() << data.size() << "bytes," << nbPages()-currentPage() << "to read.";
     readAnnonces(data);
+    qDebug() << "page loaded" << url() << data.size() << "bytes," << nbPages()-currentPage() << "pages to read" << href().size() << "annonces to read.";
 
 //    save(data, "results.txt");
 
-    if  (!atEnd())
+    if (nbPages() > 0)
     {
-        bool errorRaised = false;
+        if  (!atEnd())
+        {
+            bool errorRaised = false;
 
-        if (m_reply != reply)
-        {
-            m_reply->deleteLater();
-            m_reply = reply;
-        }
-        else
-        {
-            // start to read annonces
-            if (href().size() >= 1)
+            if (m_reply != reply)
             {
-                // first page loaded, start loading of first annonce
-                requestAnnonce(m_href.at(0));
+                m_reply->deleteLater();
+                m_reply = reply;
             }
             else
             {
-                errorRaised = true;
-                emit error("no annonce to read.");
+                // start to read annonces
+                if (href().size() >= 1)
+                {
+                    // first page loaded, start loading of first annonce
+                    requestAnnonce(m_href.at(0));
+                }
+                else
+                {
+                    errorRaised = true;
+                    emit error("no annonce to read.");
+                }
+            }
+
+            if (!errorRaised)
+            {
+                // read next page
+                QNetworkReply *reply = m_reply->manager()->get(QNetworkRequest(nextPageUrl()));
+                connect(reply, SIGNAL(finished()), this, SLOT(pageLoaded()));
+                connect(this, SIGNAL(destroyed(QObject*)), reply, SLOT(deleteLater()));
             }
         }
-
-        if (!errorRaised)
+        else
         {
-            // read next page
-            QNetworkReply *reply = m_reply->manager()->get(QNetworkRequest(nextPageUrl()));
-            connect(reply, SIGNAL(finished()), this, SLOT(pageLoaded()));
-            connect(this, SIGNAL(destroyed(QObject*)), reply, SLOT(deleteLater()));
+            allPagesLoaded = true;
         }
     }
     else
     {
-        allPagesLoaded = true;
+        emit error("invalid number of pages.");
     }
 }
 

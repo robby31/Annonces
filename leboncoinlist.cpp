@@ -18,7 +18,6 @@ void LeBonCoinList::readAnnonces(const QByteArray &data)
         if (match.captured(0).contains("class=\"list_item clearfix trackable\"") && !match.captured(1).contains("gallery"))
             addAnnonce(match.captured(1));
     }
-    qDebug() << href().size() << "pages to read";
 
     // get number of pages
     QRegularExpression refPage("<a class=\"element page\" href=\"([^\"]+)\"(.+?)</a>", QRegularExpression::MultilineOption | QRegularExpression::DotMatchesEverythingOption);
@@ -37,6 +36,9 @@ void LeBonCoinList::readAnnonces(const QByteArray &data)
                 setPages(nb);
         }
     }
+
+    if (nbPages() < 0)
+        qCritical() << "invalid number of pages" << nbPages();
 }
 
 int LeBonCoinList::currentPage()
