@@ -21,7 +21,8 @@ RESOURCES += qml.qrc
 # Default rules for deployment.
 include (deployment.pri)
 
-include (../QmlApplication/QmlApplication.prf)
+INCLUDEPATH += $$(MYLIBRARY)/$$QT_VERSION/include/QmlApplication
+LIBS += -L$$(MYLIBRARY)/$$QT_VERSION -l$$qtLibraryTarget(QmlApplication)
 
 HEADERS += \
     homepagecontroller.h \
