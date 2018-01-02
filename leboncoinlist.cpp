@@ -38,7 +38,10 @@ void LeBonCoinList::readAnnonces(const QByteArray &data)
     }
 
     if (nbPages() < 0)
+    {
         qCritical() << "invalid number of pages" << nbPages();
+        qWarning() << data;
+    }
 }
 
 int LeBonCoinList::currentPage()

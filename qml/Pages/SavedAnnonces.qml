@@ -26,7 +26,6 @@ Page {
         }
     }
 
-
     function selectSavedAnnonce(id, title) {
         loader.setSource("Annonces.qml", {parserId: id, title: title})
     }

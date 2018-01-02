@@ -15,7 +15,7 @@ Item {
 
     ListModel {
         id: parserModel
-        ListElement { name: "LeBonCoin"; url: "https://www.leboncoin.fr/voitures/offres/midi_pyrenees/occasions/"}
+        ListElement { name: "LeBonCoin"; url: "https://www.leboncoin.fr/annonces/offres/midi_pyrenees/"}
     }
 
     function checkUrl(url, indexParser) {

@@ -9,6 +9,12 @@ ListViewDelegate {
     width: parent ? parent.width : 0
     height: 100
 
+    onItemDoubleClicked: selectAnnonce()
+
+    function selectAnnonce() {
+        delegate.ListView.view.selectAnnonce(model["id"], model["ref"], model["date"], model["created_date"])
+    }
+
     contentItem: Item {
         id: annonces
 
@@ -144,7 +150,7 @@ ListViewDelegate {
             MouseArea {
                 id: arrowMouseArea
                 anchors.fill: parent
-                onClicked: delegate.ListView.view.selectAnnonce(model["id"], model["ref"], model["date"], model["created_date"])
+                onClicked: selectAnnonce()
             }
         }
 

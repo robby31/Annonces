@@ -20,7 +20,7 @@ Page {
         id: annoncesModel
         connectionName: "Annonces"
         tablename: "annonces"
-        query: "SELECT *, (SELECT prix.prix from prix WHERE prix.annonceid=annonces.id ORDER BY prix.date DESC LIMIT 1) AS price from annonces WHERE parserId=%1 ORDER BY annonces.created_date DESC".arg(parserId)
+        query: "SELECT *, (SELECT prix.prix from prix WHERE prix.annonceid=annonces.id ORDER BY prix.date DESC LIMIT 1) AS price from annonces WHERE parserId=%1 ORDER BY price ASC".arg(parserId)
 
         Component.onCompleted: {
             annoncesModel.addColumnToFilter("is_active")
@@ -83,6 +83,15 @@ Page {
                 anchors.leftMargin: 10
                 anchors.verticalCenter: parent.verticalCenter
                 font.bold: true
+            }
+
+            MyButton {
+                id: editButton
+                anchors.left: textTitle.right
+                anchors.leftMargin: 10
+                anchors.verticalCenter: parent.verticalCenter
+                sourceComponent: Text { text: "Edit"; font.pixelSize: 12 }
+                onButtonClicked: console.log("edit")
             }
 
             MyButton {

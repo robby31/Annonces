@@ -9,6 +9,12 @@ ListViewDelegate {
     width: parent ? parent.width : 0
     height: 40
 
+    onItemDoubleClicked: selectAnnonce()
+
+    function selectAnnonce() {
+        selectSavedAnnonce(model["id"], model["title"])
+    }
+
     swipe.left: Label {
         id: deleteLabel
         text: qsTr("Remove")
@@ -64,7 +70,7 @@ ListViewDelegate {
             MouseArea {
                 id: arrowMouseArea
                 anchors.fill: parent
-                onClicked: selectSavedAnnonce(model["id"], model["title"])
+                onClicked: selectAnnonce()
             }
         }
 
