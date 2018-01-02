@@ -19,7 +19,7 @@ Item {
     }
 
     function checkUrl(url, indexParser) {
-        return url.toString().startsWith(parserModel.get(indexParser).url) && titleField.text != ""
+        return titleField.text != ""
     }
 
     RowLayout {
@@ -88,7 +88,7 @@ Item {
 
             onClicked: {
                 if (titleField.text != "")
-                    saveLink(webview.url, parserCombo.currentText, titleField.text)
+                    homepagecontroller.saveLink(webview.url, parserCombo.currentText, titleField.text)
             }
         }
 

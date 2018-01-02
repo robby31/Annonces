@@ -9,7 +9,7 @@ ListViewDelegate {
     width: parent ? parent.width : 0
     height: 100
 
-    onItemDoubleClicked: selectAnnonce()
+    onDoubleClicked: selectAnnonce()
 
     function selectAnnonce() {
         delegate.ListView.view.selectAnnonce(model["id"], model["ref"], model["date"], model["created_date"])
@@ -44,7 +44,7 @@ ListViewDelegate {
 
                     Text {
                         id: annonceId
-                        width: 50
+                        width: 100
                         font.pixelSize: 18
                         text: model["id"]
                         elide: Text.ElideRight

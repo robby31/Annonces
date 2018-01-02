@@ -33,6 +33,7 @@ Page {
             annoncesModel.addColumnToFilter("modele")
             annoncesModel.addColumnToFilter("carburant")
             annoncesModel.addColumnToFilter("bv")
+            annoncesModel.addColumnToFilter("code_postal")
         }
     }
 
@@ -73,7 +74,7 @@ Page {
                 anchors.leftMargin: 10
                 anchors.verticalCenter: parent.verticalCenter
                 sourceComponent: Text { text: "Refresh"; font.pixelSize: 12 }
-                onButtonClicked: importResults(parserId)
+                onButtonClicked: homepagecontroller.importAllResults(parserId)
             }
 
             Text {

@@ -19,16 +19,17 @@ public:
     virtual ~AnnoncesApplication();
 
 signals:
+    void parserUpdatedSignal();
+    void annoncesUpdatedSignal();
 
 public slots:
     void initializeDatabase();
     void InterfaceLoaded(QObject *obj);
-    void removeParser(const int &parserId);
 
 private:
     QSettings m_settings;
     Homepagecontroller controller;
-    ApplicationWorker *worker;
+    ApplicationWorker *worker = Q_NULLPTR;
 };
 
 #endif // ANNONCESAPPLICATION_H

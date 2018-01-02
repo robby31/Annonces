@@ -2,7 +2,6 @@ import QtQuick 2.3
 import QtQuick.Controls 2.2
 import MyComponents 1.0
 import "Pages"
-import QtQuick.Dialogs 1.2
 
 MyApplication {
     id: mainWindow
@@ -10,21 +9,18 @@ MyApplication {
     property var pageLoaded
     onItemLoaded: pageLoaded = item
 
-    signal importResults(int url)
-    signal saveLink(url url, string parserType, string title)
+    Connections {
+        target: _app
 
-    function chooseDatabase() {
-        chooseDatabaseDialog.open()
-    }
+        onParserUpdatedSignal: {
+            if (pageLoaded)
+                pageLoaded.parserUpdated()
+        }
 
-    function parserUpdated() {
-        if (pageLoaded)
-            pageLoaded.parserUpdated()
-    }
-
-    function annoncesUpdated() {
-        if (pageLoaded)
-            pageLoaded.annoncesUpdated()
+        onAnnoncesUpdatedSignal: {
+            if (pageLoaded)
+                pageLoaded.annoncesUpdated()
+        }
     }
 
     controller: homepagecontroller
@@ -38,13 +34,5 @@ MyApplication {
             title: "Annonces"
             state: "ANNONCES"
         }
-    }
-
-    FileDialog {
-        id: chooseDatabaseDialog
-        selectExisting: true
-        title: "Choose database file"
-        nameFilters: [ "Database (*.sql)" ]
-        onAccepted: _app.databasePathName = fileUrl
     }
 }

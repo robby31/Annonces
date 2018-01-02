@@ -3,14 +3,14 @@
 AnnoncesApplication::AnnoncesApplication(int &argc, char **argv) :
     Application(argc, argv),
     m_settings("G. HIMBERT", "Annonces"),
-    controller(this),
-    worker(Q_NULLPTR)
+    controller(this)
 {    
     qmlRegisterType<PriceModel>("Models", 1, 0, "PriceModel");
 
     connect(this, SIGNAL(databaseOpened(QUrl)), this, SLOT(initializeDatabase()));
 
     connect(this, SIGNAL(mainQmlLoaded(QObject*)), this, SLOT(InterfaceLoaded(QObject*)));
+
     addController("homepagecontroller", &controller);
 
     setdatabaseDiverName("QSQLITE");
@@ -34,25 +34,18 @@ AnnoncesApplication::~AnnoncesApplication()
 
 void AnnoncesApplication::InterfaceLoaded(QObject *obj)
 {
+    Q_UNUSED(obj)
+
     // start worker
     worker = new ApplicationWorker();
     addWorker(&controller, worker);
 
-    connect(obj, SIGNAL(importResults(int)), &controller, SLOT(importAllResults(int)));
     connect(&controller, SIGNAL(importAllResultsSignal(int)), worker, SLOT(importAllResults(int)));
-
-    connect(obj, SIGNAL(saveLink(QUrl,QString,QString)), &controller, SLOT(saveLink(QUrl,QString,QString)));
     connect(&controller, SIGNAL(saveLinkSignal(QUrl,QString,QString)), worker, SLOT(saveLink(QUrl,QString,QString)));
-
-    connect(worker, SIGNAL(parserUpdated()), obj, SLOT(parserUpdated()));
-    connect(worker, SIGNAL(annoncesUpdated()), obj, SLOT(annoncesUpdated()));
-
     connect(&controller, SIGNAL(removeParserSignal(int)), worker, SLOT(removeParser(int)));
-}
 
-void AnnoncesApplication::removeParser(const int &parserId)
-{
-    controller.removeParser(parserId);
+    connect(worker, SIGNAL(parserUpdated()), this, SIGNAL(parserUpdatedSignal()));
+    connect(worker, SIGNAL(annoncesUpdated()), this, SIGNAL(annoncesUpdatedSignal()));
 }
 
 void AnnoncesApplication::initializeDatabase()

@@ -9,7 +9,7 @@ ListViewDelegate {
     width: parent ? parent.width : 0
     height: 40
 
-    onItemDoubleClicked: selectAnnonce()
+    onDoubleClicked: selectAnnonce()
 
     function selectAnnonce() {
         selectSavedAnnonce(model["id"], model["title"])
@@ -26,7 +26,7 @@ ListViewDelegate {
 
         SwipeDelegate.onClicked: {
             swipe.close()
-            _app.removeParser(model["id"])
+            homepagecontroller.removeParser(model["id"])
         }
 
         background: Rectangle {

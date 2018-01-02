@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.1
+import QtQuick.Dialogs 1.2
 
 Item {
     anchors.margins: 10
@@ -17,8 +18,16 @@ Item {
         Button {
             anchors.horizontalCenter: parent.horizontalCenter
             text: "Choose"
-            onClicked: chooseDatabase()
+            onClicked: chooseDatabaseDialog.open()
         }
+    }
+
+    FileDialog {
+        id: chooseDatabaseDialog
+        selectExisting: true
+        title: "Choose database file"
+        nameFilters: [ "Database (*.sql)" ]
+        onAccepted: _app.databasePathName = fileUrl
     }
 }
 
