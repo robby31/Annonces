@@ -8,8 +8,9 @@ import MyComponents 1.0
 Item {
     id: item
 
-    function parserUpdated() {
-        annoncesModel.reload()
+    Connections {
+        target: homepagecontroller
+        onParserUpdated: annoncesModel.reload()
     }
 
     SqlListModel {
@@ -19,68 +20,45 @@ Item {
         query: "SELECT * from parser ORDER BY title"
     }
 
-    Component {
-        id: listAnnonces
+    Rectangle {
+        id: header
 
-        Item {
-            Rectangle {
-                id: header
+        anchors { top: parent.top; left: parent.left }
+        width: parent.width
+        height: 40
 
-                anchors { top: parent.top; left: parent.left }
-                width: parent.width
-                height: 40
+        gradient: Gradient {
+            GradientStop { position: 0.0; color: theme.gradientStartColor }
+            GradientStop { position: 1.0; color: theme.gradientEndColor }
+        }
 
-                gradient: Gradient {
-                    GradientStop { position: 0.0; color: theme.gradientStartColor }
-                    GradientStop { position: 1.0; color: theme.gradientEndColor }
-                }
+        MyButton {
+            anchors { left: parent.left; leftMargin: 10; verticalCenter: parent.verticalCenter }
+            sourceComponent: Text { text: "+ New" }
+            onButtonClicked: stack.push("Navigator.qml")
+        }
 
-                MyButton {
-                    anchors { left: parent.left; leftMargin: 10; verticalCenter: parent.verticalCenter }
-                    sourceComponent: Text { text: "+ New" }
-                    onButtonClicked: stack.push(navigator)
-                }
-
-                Text {
-                    id: text
-                    anchors { right: parent.right; rightMargin: 10; verticalCenter: parent.verticalCenter }
-                    width: contentWidth
-                    height: contentHeight
-                    text: annoncesModel ? annoncesModel.rowCount + " annonces" : ""
-                    color: "blue"
-                }
-            }
-
-            ScrollView {
-                anchors { top: header.bottom ; bottom: parent.bottom; left: parent.left; right: parent.right }
-
-                ListView {
-                    id: listview
-
-                    model: annoncesModel
-                    delegate: SavedAnnoncesDelegate { }
-                    focus: true
-                    highlightFollowsCurrentItem: false
-                    clip: true
-                }
-            }
+        Text {
+            id: text
+            anchors { right: parent.right; rightMargin: 10; verticalCenter: parent.verticalCenter }
+            width: contentWidth
+            height: contentHeight
+            text: annoncesModel ? annoncesModel.rowCount + " annonces" : ""
+            color: "blue"
         }
     }
 
-    Component {
-        id: navigator
+    ScrollView {
+        anchors { top: header.bottom ; bottom: parent.bottom; left: parent.left; right: parent.right }
 
-        Navigator {
-            anchors.fill: parent
-            onClose: stack.pop()
+        ListView {
+            id: listview
+
+            model: annoncesModel
+            delegate: SavedAnnoncesDelegate { }
+            focus: true
+            highlightFollowsCurrentItem: false
+            clip: true
         }
-    }
-
-
-    StackView {
-        id: stack
-
-        anchors.fill: parent
-        initialItem: listAnnonces
     }
 }

@@ -48,12 +48,16 @@ void ApplicationWorker::importAllResults(const int &parserId)
         {
             qCritical() << query.lastError().text();
             emit errorDuringProcess("Unable to define Url.");
+            db.rollback();
         }
     }
 }
 
 void ApplicationWorker::errorRaised(const QString &message)
 {
+    QSqlDatabase db = GET_DATABASE("Annonces");
+    db.rollback();
+
     emit errorDuringProcess(message);
 }
 

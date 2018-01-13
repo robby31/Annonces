@@ -12,14 +12,6 @@ Item {
             annonces.toggleMenu()
     }
 
-    function parserUpdated() {
-        annonces.parserUpdated()
-    }
-
-    function annoncesUpdated() {
-        annonces.annoncesUpdated()
-    }
-
     SavedAnnonces {
         id: annonces
         anchors.fill: parent

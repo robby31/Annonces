@@ -8,10 +8,9 @@ import QtQuick.Dialogs 1.2
 Item {
     id: item
 
-    width: 300
-    height: 200
-
-    signal close()
+    property int idAnnonce: -1
+    property string currentUrl: ""
+    property string currentTitle: ""
 
     ListModel {
         id: parserModel
@@ -33,6 +32,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             width: 200
             Layout.preferredHeight: parent.height
+            visible: idAnnonce == -1
 
             model: parserModel
             textRole: "name"
@@ -83,20 +83,26 @@ Item {
         Button {
             anchors.verticalCenter: parent.verticalCenter
             Layout.preferredHeight: parent.height
-            text: "Save"
+            text: idAnnonce == -1 ? "Save" : "Update"
             enabled: checkUrl(webview.url, parserCombo.currentIndex)
 
             onClicked: {
-                if (titleField.text != "")
-                    homepagecontroller.saveLink(webview.url, parserCombo.currentText, titleField.text)
+                if (text == "Save") {
+                    if (titleField.text != "")
+                        homepagecontroller.saveLink(webview.url, parserCombo.currentText, titleField.text)
+                }
+                else if (text == "Update") {
+                    if (titleField.text != "")
+                        homepagecontroller.updateLink(idAnnonce, webview.url, titleField.text)
+                }
             }
         }
 
         Button {
             anchors.verticalCenter: parent.verticalCenter
             Layout.preferredHeight: parent.height
-            text: "Close"
-            onClicked: close()
+            text: "Cancel"
+            onClicked: stack.pop()
         }
     }
 
@@ -113,6 +119,13 @@ Item {
             width: scrollwebview.width
             height: scrollwebview.height
         }
+    }
+
+    Component.onCompleted: {
+        if (currentUrl && idAnnonce > 0)
+            webview.url = currentUrl
+        if (currentTitle && idAnnonce > 0)
+            titleField.text = currentTitle
     }
 }
 

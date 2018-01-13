@@ -8,8 +8,7 @@ import QtCharts 2.0
 import QtGraphicalEffects 1.0
 
 Item {
-    width: 600
-    height: 200
+    id: item
 
     property int id: -1
     property date date
@@ -52,7 +51,7 @@ Item {
                 id: backButton
                 anchors { top: parent.top; topMargin: 10 }
                 sourceComponent: Text { text: "< Back"; font.pixelSize: 12 }
-                onButtonClicked: back()
+                onButtonClicked: stack.pop()
             }
 
             Column

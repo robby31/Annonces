@@ -27,27 +27,13 @@ Page {
     }
 
     function selectSavedAnnonce(id, title) {
-        loader.setSource("Annonces.qml", {parserId: id, title: title})
+        stack.push("Annonces.qml", {parserId: id, title: title})
     }
 
-    function backToSavedAnnonces() {
-        loader.source = "AnnoncesListView.qml"
-    }
-
-    function parserUpdated() {
-        if (loader.source == "qrc:/qml/Pages/AnnoncesListView.qml")
-            loader.item.parserUpdated()
-    }
-
-    function annoncesUpdated() {
-        if (loader.source == "qrc:/qml/Pages/Annonces.qml")
-            loader.item.annoncesUpdated()
-    }
-
-    Loader {
-        id: loader
+    StackView {
+        id: stack
         anchors.fill: parent
-        source: "AnnoncesListView.qml"
+        initialItem: Qt.resolvedUrl("AnnoncesListView.qml")
     }
 }
 

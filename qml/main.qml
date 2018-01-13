@@ -9,20 +9,6 @@ MyApplication {
     property var pageLoaded
     onItemLoaded: pageLoaded = item
 
-    Connections {
-        target: _app
-
-        onParserUpdatedSignal: {
-            if (pageLoaded)
-                pageLoaded.parserUpdated()
-        }
-
-        onAnnoncesUpdatedSignal: {
-            if (pageLoaded)
-                pageLoaded.annoncesUpdated()
-        }
-    }
-
     controller: homepagecontroller
     modelButtons : mybuttons
     srcPages: _app.databasePathName.toString() === "" ? "SelectDatabase.qml" : "Pages/ApplicationPages.qml"

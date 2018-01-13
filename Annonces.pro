@@ -14,7 +14,8 @@ SOURCES += main.cpp \
     leboncoinlist.cpp \
     annonce.cpp \
     leboncoin.cpp \
-    pricemodel.cpp
+    pricemodel.cpp \
+    annoncemodel.cpp
 
 RESOURCES += qml.qrc
 
@@ -32,4 +33,5 @@ HEADERS += \
     leboncoinlist.h \
     annonce.h \
     leboncoin.h \
-    pricemodel.h
+    pricemodel.h \
+    annoncemodel.h

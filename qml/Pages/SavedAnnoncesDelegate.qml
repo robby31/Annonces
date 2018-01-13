@@ -15,22 +15,44 @@ ListViewDelegate {
         selectSavedAnnonce(model["id"], model["title"])
     }
 
-    swipe.left: Label {
-        id: deleteLabel
-        text: qsTr("Remove")
-        color: "white"
-        verticalAlignment: Label.AlignVCenter
-        padding: 12
-        height: parent.height
+    swipe.left: Row {
         anchors.left: parent.left
+        height: parent.height
 
-        SwipeDelegate.onClicked: {
-            swipe.close()
-            homepagecontroller.removeParser(model["id"])
+        Label {
+            id: editLabel
+            text: qsTr("Edit")
+            color: "white"
+            verticalAlignment: Label.AlignVCenter
+            padding: 12
+            height: parent.height
+
+            SwipeDelegate.onClicked: {
+                swipe.close()
+                stack.push("Navigator.qml", {idAnnonce: model["id"], currentUrl: model["url"], currentTitle: model["title"] })
+            }
+
+            background: Rectangle {
+                color: editLabel.SwipeDelegate.pressed ? Qt.darker("tomato", 1.1) : "tomato"
+            }
         }
 
-        background: Rectangle {
-            color: deleteLabel.SwipeDelegate.pressed ? Qt.darker("tomato", 1.1) : "tomato"
+        Label {
+            id: deleteLabel
+            text: qsTr("Remove")
+            color: "white"
+            verticalAlignment: Label.AlignVCenter
+            padding: 12
+            height: parent.height
+
+            SwipeDelegate.onClicked: {
+                swipe.close()
+                homepagecontroller.removeParser(model["id"])
+            }
+
+            background: Rectangle {
+                color: deleteLabel.SwipeDelegate.pressed ? Qt.darker("tomato", 1.1) : "tomato"
+            }
         }
     }
 

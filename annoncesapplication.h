@@ -19,8 +19,6 @@ public:
     virtual ~AnnoncesApplication();
 
 signals:
-    void parserUpdatedSignal();
-    void annoncesUpdatedSignal();
 
 public slots:
     void initializeDatabase();

@@ -44,8 +44,8 @@ void AnnoncesApplication::InterfaceLoaded(QObject *obj)
     connect(&controller, SIGNAL(saveLinkSignal(QUrl,QString,QString)), worker, SLOT(saveLink(QUrl,QString,QString)));
     connect(&controller, SIGNAL(removeParserSignal(int)), worker, SLOT(removeParser(int)));
 
-    connect(worker, SIGNAL(parserUpdated()), this, SIGNAL(parserUpdatedSignal()));
-    connect(worker, SIGNAL(annoncesUpdated()), this, SIGNAL(annoncesUpdatedSignal()));
+    connect(worker, SIGNAL(parserUpdated()), &controller, SIGNAL(parserUpdated()));
+    connect(worker, SIGNAL(annoncesUpdated()), &controller, SIGNAL(annoncesUpdated()));
 }
 
 void AnnoncesApplication::initializeDatabase()
@@ -113,6 +113,25 @@ void AnnoncesApplication::initializeDatabase()
                         "annonceId NOT NULL REFERENCES annonces, "
                         "param TEXT UNIQUE, "
                         "value TEXT)"))
+            qCritical() << query.lastError().text();
+
+        // table to store optional parameters
+        if (!query.exec("create table IF NOT EXISTS param_name "
+                        "(id INTEGER PRIMARY KEY, "
+                        "name TEXT UNIQUE NOT NULL)"))
+            qCritical() << query.lastError().text();
+
+        if (!query.exec("create table IF NOT EXISTS param_value "
+                        "(id INTEGER PRIMARY KEY, "
+                        "value TEXT UNIQUE NOT NULL)"))
+            qCritical() << query.lastError().text();
+
+        if (!query.exec("create table IF NOT EXISTS optional_param "
+                        "(id INTEGER PRIMARY KEY, "
+                        "annonceId NOT NULL REFERENCES annonces, "
+                        "param NOT NULL REFERENCES param_name, "
+                        "value NOT NULL REFERENCES param_value,"
+                        "UNIQUE(annonceId, param))"))
             qCritical() << query.lastError().text();
     }
     else

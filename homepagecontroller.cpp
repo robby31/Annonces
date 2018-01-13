@@ -18,6 +18,48 @@ void Homepagecontroller::saveLink(const QUrl &url, const QString &parserType, co
         emit saveLinkSignal(url, parserType, title);
 }
 
+void Homepagecontroller::updateLink(const int &id, const QUrl &url, const QString &title)
+{
+    QSqlDatabase db = GET_DATABASE("Annonces");
+    if (!db.isOpen())
+    {
+        errorDuringProcess("Unable to open Database.");
+    }
+    else
+    {
+        db.transaction();
+
+        QSqlQuery query(db);
+        query.prepare("UPDATE parser SET url=:url WHERE id=:id");
+        query.bindValue(":id", id);
+        query.bindValue(":url", url);
+        if (!query.exec())
+        {
+            qCritical() << query.lastError().text();
+            db.rollback();
+            errorDuringProcess("Unable to update parser.");
+        }
+        else
+        {
+            query.prepare("UPDATE parser SET title=:title WHERE id=:id");
+            query.bindValue(":id", id);
+            query.bindValue(":title", title);
+            if (!query.exec())
+            {
+                qCritical() << query.lastError().text();
+                db.rollback();
+                errorDuringProcess("Unable to update parser.");
+            }
+            else
+            {
+                db.commit();
+                processOver("parser updated.");
+                emit parserUpdated();
+            }
+        }
+    }
+}
+
 void Homepagecontroller::removeParser(const int &parserId)
 {
     if (setActivity("Remove"))

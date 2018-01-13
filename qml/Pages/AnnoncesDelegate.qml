@@ -9,10 +9,16 @@ ListViewDelegate {
     width: parent ? parent.width : 0
     height: 100
 
+    property int annonce_id: model["id"]
+
     onDoubleClicked: selectAnnonce()
 
     function selectAnnonce() {
         delegate.ListView.view.selectAnnonce(model["id"], model["ref"], model["date"], model["created_date"])
+    }
+
+    function setVersionModele(version) {
+        annoncesModel.setVersionModele(model["id"], version)
     }
 
     contentItem: Item {
@@ -35,12 +41,14 @@ ListViewDelegate {
             }
 
             Column {
-                spacing: 10
+                spacing: 0
                 width: parent.width - picture.width - parent.spacing
+                height: parent.height
                 anchors.verticalCenter: parent.verticalCenter
 
                 Row {
                     width: parent.width
+                    height: 50
 
                     Text {
                         id: annonceId
@@ -109,31 +117,74 @@ ListViewDelegate {
                     }
                 }
 
-                Row {
+                Item {
                     width: parent.width
-                    spacing: 10
+                    height: 50
 
                     Text {
                         id: annonceTitre
                         font.pixelSize: 18
-                        width: parent.width - annoncePrix.width - parent.spacing*2
+                        width: contentWidth
                         text: model["titre"]
-                        elide: Text.ElideRight
                         color: annonces.color
                         verticalAlignment: Text.AlignVCenter
                         clip: true
                     }
 
-                    Text {
-                        id: annoncePrix
-                        width: contentWidth
-                        font.pixelSize: 18
-                        font.bold: true
-                        text: model["price"] + " euros"
-                        color: annonces.color
-                        horizontalAlignment: Text.AlignRight
-                        verticalAlignment: Text.AlignVCenter
+                    Row {
+                        anchors.right: parent.right
+                        width: parent.width - annonceTitre.width > 0 ? parent.width - annonceTitre.width : 0
+                        layoutDirection: Qt.RightToLeft
+                        spacing: 10
                         clip: true
+
+                        Text {
+                            id: annoncePrix
+                            width: contentWidth
+                            font.pixelSize: 18
+                            font.bold: true
+                            text: model["price"] + " euros"
+                            color: annonces.color
+                            horizontalAlignment: Text.AlignRight
+                            verticalAlignment: Text.AlignVCenter
+                            clip: true
+                        }
+
+                        EditableComboBox {
+                            id: versionModeleCombo
+                            width: 200
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            placeholderText: "unknown version"
+
+                            model: versionModel
+                            textRole: "version_modele"
+                            editable: true
+                            color: annonces.color
+                            clip: true
+
+                            onTextUpdated: {
+                                setVersionModele(editText)
+                                model.reload()
+                                focus = false
+                            }
+
+                            onAccepted: {
+                                setVersionModele(editText)
+
+                                model.reload()
+
+                                var newIndex = model.findRow(editText, "version_modele")
+                                currentIndex = newIndex
+
+                                focus = false
+                            }
+
+                            Component.onCompleted: {
+                                if (model)
+                                    currentIndex = model.findRow(version_modele, "version_modele")
+                            }
+                        }
                     }
                 }
             }
