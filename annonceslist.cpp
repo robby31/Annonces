@@ -70,37 +70,31 @@ void AnnoncesList::pageLoaded()
 
     if (nbPages() > 0)
     {
-        if  (!atEnd())
+        if (m_reply != reply)
         {
-            bool errorRaised = false;
-
-            if (m_reply != reply)
+            m_reply->deleteLater();
+            m_reply = reply;
+        }
+        else
+        {
+            // start to read annonces
+            if (href().size() >= 1)
             {
-                m_reply->deleteLater();
-                m_reply = reply;
+                // first page loaded, start loading of first annonce
+                requestAnnonce(m_href.at(0));
             }
             else
             {
-                // start to read annonces
-                if (href().size() >= 1)
-                {
-                    // first page loaded, start loading of first annonce
-                    requestAnnonce(m_href.at(0));
-                }
-                else
-                {
-                    errorRaised = true;
-                    emit error("no annonce to read.");
-                }
+                emit error("no annonce to read.");
             }
+        }
 
-            if (!errorRaised)
-            {
-                // read next page
-                QNetworkReply *reply = m_reply->manager()->get(QNetworkRequest(nextPageUrl()));
-                connect(reply, SIGNAL(finished()), this, SLOT(pageLoaded()));
-                connect(this, SIGNAL(destroyed(QObject*)), reply, SLOT(deleteLater()));
-            }
+        if  (!atEnd())
+        {
+            // read next page
+            QNetworkReply *reply = m_reply->manager()->get(QNetworkRequest(nextPageUrl()));
+            connect(reply, SIGNAL(finished()), this, SLOT(pageLoaded()));
+            connect(this, SIGNAL(destroyed(QObject*)), reply, SLOT(deleteLater()));
         }
         else
         {

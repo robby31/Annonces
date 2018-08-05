@@ -11,7 +11,7 @@ MyApplication {
 
     controller: homepagecontroller
     modelButtons : mybuttons
-    srcPages: _app.databasePathName.toString() === "" ? "SelectDatabase.qml" : "Pages/ApplicationPages.qml"
+    srcPages: _app.databaseName.toString() === "" ? "SelectDatabase.qml" : "Pages/ApplicationPages.qml"
 
     ListModel {
         id: mybuttons

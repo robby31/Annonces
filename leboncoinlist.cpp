@@ -9,44 +9,82 @@ void LeBonCoinList::readAnnonces(const QByteArray &data)
 {
     // parse all annonces
 
-    // links of annonces
-    QRegularExpression ref("<li itemscope.+?<a href=\"([^\"]+)\"(.+?)</a>", QRegularExpression::MultilineOption | QRegularExpression::DotMatchesEverythingOption);
-    QRegularExpressionMatchIterator it = ref.globalMatch(data);
-    while (it.hasNext())
-    {
-        QRegularExpressionMatch match = it.next();
-        if (match.captured(0).contains("class=\"list_item clearfix trackable\"") && !match.captured(1).contains("gallery"))
-            addAnnonce(match.captured(1));
-    }
+    int count_per_page = -1;
 
-    // get number of pages
-    QRegularExpression refPage("<a class=\"element page\" href=\"([^\"]+)\"(.+?)</a>", QRegularExpression::MultilineOption | QRegularExpression::DotMatchesEverythingOption);
-    QRegularExpressionMatchIterator itPage = refPage.globalMatch(data);
-    while (itPage.hasNext())
+    if (nbPages() <= 0)
     {
-        QRegularExpressionMatch match = itPage.next();
-
-        // read the number of pages to parse to get all annonces
-        QRegularExpression pages("o=(\\d+)");
-        QRegularExpressionMatch pages_matched = pages.match(match.captured(0));
-        if (pages_matched.hasMatch())
+        QRegularExpression script_config("<script>window.APP_CONFIG\\s*=\\s*(.*)</script>");
+        QRegularExpressionMatch match_config = script_config.match(data);
+        if (match_config.hasMatch())
         {
-            int nb = pages_matched.captured(1).toInt();
-            if (nb>0 && nbPages()<nb)
-                setPages(nb);
+            QJsonDocument jsonDocument = QJsonDocument::fromJson(match_config.captured(1).toUtf8());
+            if (jsonDocument.isObject())
+            {
+                QJsonObject jsonObject = jsonDocument.object();
+                if (jsonObject.contains("AD_LIST"))
+                {
+                    QJsonObject ad_list = jsonObject["AD_LIST"].toObject();
+                    if (ad_list.contains("COUNT_PER_PAGE"))
+                        count_per_page = ad_list["COUNT_PER_PAGE"].toInt();
+                }
+            }
         }
     }
 
-    if (nbPages() < 0)
+    if (nbPages() > 0 or count_per_page > 0)
     {
-        qCritical() << "invalid number of pages" << nbPages();
-        qWarning() << data;
+        QRegularExpression script_flux("<script>window.FLUX_STATE\\s*=\\s*(.*)</script>");
+        QRegularExpressionMatch match_flux = script_flux.match(data);
+        if (match_flux.hasMatch())
+        {
+            QJsonDocument jsonDocument = QJsonDocument::fromJson(match_flux.captured(1).toUtf8());
+            if (jsonDocument.isObject())
+            {
+                QJsonObject jsonObject = jsonDocument.object();
+                if (jsonObject.contains("adSearch"))
+                {
+                    QJsonObject adSearch = jsonObject["adSearch"].toObject();
+                    if (adSearch.contains("data"))
+                    {
+                        QJsonObject data = adSearch["data"].toObject();
+
+                        if (nbPages() <= 0)
+                        {
+                            int totalPages = (int)(data["total"].toInt() / count_per_page) + 1;
+                            setPages(totalPages);
+                        }
+
+                        if (data.contains("ads") && data["ads"].isArray())
+                        {
+                            foreach (const QJsonValue &value, data["ads"].toArray())
+                            {
+                                QJsonObject annonce = value.toObject();
+                                if (annonce.contains("url"))
+                                {
+                                    QString url = annonce["url"].toString();
+                                    if (!url.endsWith('/'))
+                                        url += '/';
+                                    addAnnonce(url);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
+    else
+    {
+        qCritical() << "invalid count per page" << count_per_page;
+    }
+
+    if (nbPages() < 0)
+        qCritical() << "invalid number of pages" << nbPages();
 }
 
 int LeBonCoinList::currentPage()
 {
-    QRegularExpression pages("o=(\\d+)");
+    QRegularExpression pages("page=(\\d+)");
     QRegularExpressionMatch match = pages.match(url().toString());
     if (match.hasMatch())
         return match.captured(1).toInt();
@@ -59,17 +97,17 @@ QUrl LeBonCoinList::nextPageUrl()
     if (atEnd())
         return QUrl();
 
-    QRegularExpression pages("o=(\\d+)");
+    QRegularExpression pages("page=(\\d+)");
     QString str_url = url().toString();
     QRegularExpressionMatch match = pages.match(str_url);
     if (match.hasMatch())
     {
-        str_url.replace(pages, QString("o=%1").arg(currentPage()+1));
+        str_url.replace(pages, QString("page=%1").arg(currentPage()+1));
         return QUrl(str_url);
     }
     else
     {
-        return QUrl(str_url + "&o=2");
+        return QUrl(str_url + "&page=2");
     }
 }
 

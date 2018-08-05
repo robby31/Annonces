@@ -27,7 +27,7 @@ Item {
         selectExisting: true
         title: "Choose database file"
         nameFilters: [ "Database (*.sql)" ]
-        onAccepted: _app.databasePathName = fileUrl
+        onAccepted: _app.databaseName = fileUrl.toString().replace(/^(file:\/{2})/,"")
     }
 }
 

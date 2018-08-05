@@ -150,39 +150,24 @@ ListViewDelegate {
                             clip: true
                         }
 
-                        EditableComboBox {
+                        ModelEditableComboBox {
                             id: versionModeleCombo
                             width: 200
                             anchors.verticalCenter: parent.verticalCenter
-
-                            placeholderText: "unknown version"
-
-                            model: versionModel
-                            textRole: "version_modele"
                             editable: true
                             color: annonces.color
                             clip: true
 
-                            onTextUpdated: {
-                                setVersionModele(editText)
+                            placeholderText: "unknown version"
+
+                            isCurrentItem: delegate.ListView.isCurrentItem
+                            modelText: version_modele
+                            model: versionModel
+                            textRole: "version_modele"
+
+                            onUpdateModelText: {
+                                setVersionModele(text)
                                 model.reload()
-                                focus = false
-                            }
-
-                            onAccepted: {
-                                setVersionModele(editText)
-
-                                model.reload()
-
-                                var newIndex = model.findRow(editText, "version_modele")
-                                currentIndex = newIndex
-
-                                focus = false
-                            }
-
-                            Component.onCompleted: {
-                                if (model)
-                                    currentIndex = model.findRow(version_modele, "version_modele")
                             }
                         }
                     }

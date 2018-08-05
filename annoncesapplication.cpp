@@ -7,7 +7,7 @@ AnnoncesApplication::AnnoncesApplication(int &argc, char **argv) :
 {    
     qmlRegisterType<PriceModel>("Models", 1, 0, "PriceModel");
 
-    connect(this, SIGNAL(databaseOpened(QUrl)), this, SLOT(initializeDatabase()));
+    connect(this, SIGNAL(databaseOpened(QString)), this, SLOT(initializeDatabase()));
 
     connect(this, SIGNAL(mainQmlLoaded(QObject*)), this, SLOT(InterfaceLoaded(QObject*)));
 
@@ -18,7 +18,7 @@ AnnoncesApplication::AnnoncesApplication(int &argc, char **argv) :
 
     QString path = m_settings.value("databasePathName").toString();
     if (!path.isEmpty())
-        setdatabasePathName(QUrl::fromLocalFile(path));
+        setdatabaseName(QUrl::fromLocalFile(path).toLocalFile());
 }
 
 AnnoncesApplication::~AnnoncesApplication()

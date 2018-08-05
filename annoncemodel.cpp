@@ -101,6 +101,8 @@ void AnnonceModel::setOptionalParam(const int &annonceId, const QString &name, c
     {
         qCritical() << "database not open.";
     }
+
+    reload();
 }
 
 int AnnonceModel::getOptionalParamId(const QString &name, bool createParam)

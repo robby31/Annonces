@@ -3,6 +3,9 @@
 
 #include "annonceslist.h"
 #include "leboncoin.h"
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
 
 class LeBonCoinList : public AnnoncesList
 {
