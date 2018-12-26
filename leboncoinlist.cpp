@@ -31,7 +31,7 @@ void LeBonCoinList::readAnnonces(const QByteArray &data)
         }
     }
 
-    if (nbPages() > 0 or count_per_page > 0)
+    if (nbPages() > 0 || count_per_page > 0)
     {
         QRegularExpression script_flux("<script>window.FLUX_STATE\\s*=\\s*(.*)</script>");
         QRegularExpressionMatch match_flux = script_flux.match(data);
