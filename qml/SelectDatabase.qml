@@ -24,7 +24,7 @@ Item {
 
     FileDialog {
         id: chooseDatabaseDialog
-        selectExisting: true
+        selectExisting: false
         title: "Choose database file"
         nameFilters: [ "Database (*.sql)" ]
         onAccepted: _app.databaseName = fileUrl.toString().replace(/^(file:\/{2})/,"")
