@@ -53,7 +53,7 @@ LeBonCoin::LeBonCoin(int parserId, QUrl url, QByteArray data, QObject *parent) :
         foreach (const QJsonValue &data, m_adView["attributes"].toArray())
         {
             QJsonObject attribute = data.toObject();
-            if (attribute.contains("key") << attribute.contains("value_label"))
+            if (attribute.contains("key") && attribute.contains("value_label"))
             {
                 QString key = attribute["key"].toString();
 
